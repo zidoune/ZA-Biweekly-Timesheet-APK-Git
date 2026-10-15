@@ -1,0 +1,8 @@
+{
+  "name": "ZA Biweekly Timesheet",
+  "description": "Biweekly project timesheet with start/end time punch tracking, unpaid break deduction, 14-day pay periods, and exportable PDF audit logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile and timesheet preferences",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "employeeName": { "type": "string", "maxLength": 120 },
+        "employeePhone": { "type": "string", "maxLength": 40 },
+        "employerName": { "type": "string", "maxLength": 120 },
+        "employerPhone": { "type": "string", "maxLength": 40 },
+        "employeeEmail": { "type": "string", "maxLength": 120 },
+        "defaultHourlyRate": { "type": "number" },
+        "targetWorkingDays": { "type": "number" },
+        "dailyStandardHours": { "type": "number" },
+        "defaultBreakMinutes": { "type": "number" },
+        "overtimeThreshold": { "type": "number" },
+        "overtimeRateMultiplier": { "type": "number" },
+        "currencySymbol": { "type": "string", "maxLength": 8 }
+      },
+      "required": ["userId", "employeeName"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Client job site or project billing code",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 120 },
+        "code": { "type": "string", "maxLength": 50 },
+        "rate": { "type": "number" },
+        "billable": { "type": "boolean" },
+        "color": { "type": "string", "maxLength": 30 }
+      },
+      "required": ["id", "userId", "name"]
+    },
+    "TimeEntry": {
+      "title": "TimeEntry",
+      "description": "Logged work time interval",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 10 },
+        "projectId": { "type": "string", "maxLength": 128 },
+        "startTime": { "type": "string", "maxLength": 10 },
+        "endTime": { "type": "string", "maxLength": 10 },
+        "breakMinutes": { "type": "number" },
+        "netHours": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 500 }
+      },
+      "required": ["id", "userId", "date", "projectId", "netHours"]
+    },
+    "DayOff": {
+      "title": "DayOff",
+      "description": "Designated leave or unworked day record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 10 },
+        "reason": { "type": "string", "maxLength": 100 },
+        "notes": { "type": "string", "maxLength": 500 },
+        "isDidNotWork": { "type": "boolean" },
+        "isPaid": { "type": "boolean" }
+      },
+      "required": ["id", "userId", "date"]
+    },
+    "ManagedEmployee": {
+      "title": "ManagedEmployee",
+      "description": "Employee record managed by contractor for delegated timesheet entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "employeeId": { "type": "string", "maxLength": 64 },
+        "employeeName": { "type": "string", "maxLength": 120 },
+        "employeeEmail": { "type": "string", "maxLength": 120 },
+        "employeePhone": { "type": "string", "maxLength": 40 },
+        "title": { "type": "string", "maxLength": 120 },
+        "department": { "type": "string", "maxLength": 120 },
+        "supervisorName": { "type": "string", "maxLength": 120 },
+        "defaultHourlyRate": { "type": "number" },
+        "dailyStandardHours": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "maxLength": 40 }
+      },
+      "required": ["id", "userId", "employeeId", "employeeName"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile and timesheet settings"
+    },
+    "/users/{userId}/projects/{projectId}": {
+      "schema": "Project",
+      "description": "User projects and job sites"
+    },
+    "/users/{userId}/entries/{entryId}": {
+      "schema": "TimeEntry",
+      "description": "User logged timesheet punches"
+    },
+    "/users/{userId}/daysOff/{dayOffId}": {
+      "schema": "DayOff",
+      "description": "User scheduled non-work days or leaves"
+    },
+    "/users/{userId}/managedEmployees/{managedEmployeeId}": {
+      "schema": "ManagedEmployee",
+      "description": "Contractor-managed employee directory with unique IDs"
+    }
+  }
+}

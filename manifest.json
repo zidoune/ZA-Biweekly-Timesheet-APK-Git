@@ -1,0 +1,39 @@
+{
+  "background_color": "#ffffff",
+  "dir": "auto",
+  "display": "standalone",
+  "name": "Biweekly Timesheet &amp; Project Audit Log System",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "BiweeklyTimesheet",
+  "start_url": "/",
+  "theme_color": "#946800",
+  "icons": [
+    {
+      "src": "https://ais-dev-o32wg3m6ia2xg4j5kgowog-471017656567.us-east5.run.app/favicon.ico",
+      "type": "image/x-icon",
+      "isSquare": false,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ],
+  "id": "ZA-Biweekly-Timesheet",
+  "description": "A high-precision, production-grade biweekly timesheet system designed for contractors, consultants, and teams. Tracks project hours through explicit start and end times, supports live punch timers and unpaid break deductions across 14-day Monday-to-Sunday pay cycles, and generates audit-ready PDF summaries.",
+  "categories": [
+    "business",
+    "finance"
+  ],
+  "lang": "en",
+  "display_override": [
+    "browser",
+    "fullscreen",
+    "minimal-ui",
+    "standalone",
+    "window-controls-overlay"
+  ]
+}
