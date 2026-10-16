@@ -304,7 +304,6 @@ export default function App() {
   };
 
   const handleRemoveDayOff = (targetDateISO: string) => {
-    const dayOffToRemove = daysOff.find((d) => d.date === targetDateISO);
     setDaysOff((prev) => prev.filter((d) => d.date !== targetDateISO));
   };
 
@@ -312,7 +311,7 @@ export default function App() {
     const prevEmployer = profile.employerName;
     setProfile(newProfile);
     saveProfile(newProfile);
-    // If employer / client name changed, sync projects belonging to previous client or Oakridge Custom Homes
+    // If employer / client name changed, update projects belonging to the previous client or Oakridge Custom Homes
     if (newProfile.employerName && prevEmployer && newProfile.employerName !== prevEmployer) {
       const updatedProjects = projects.map((proj) =>
         proj.client.toLowerCase() === prevEmployer.toLowerCase() ||
