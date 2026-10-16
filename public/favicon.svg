@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="chronos-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="chronos-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#2563eb" />
+    </linearGradient>
+  </defs>
+  <!-- Background squircle -->
+  <rect width="32" height="32" rx="7" fill="url(#chronos-bg)"/>
+  <!-- Subtle inner border highlight -->
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" stroke="#334155" stroke-opacity="0.6"/>
+  <!-- Track ring -->
+  <circle cx="16" cy="16" r="10.5" stroke="#334155" stroke-width="1.8"/>
+  <!-- Active Biweekly Timesheet Arc -->
+  <circle cx="16" cy="16" r="10.5" stroke="url(#chronos-accent)" stroke-width="1.8" stroke-dasharray="46 22" stroke-linecap="round"/>
+  <!-- Clock hands (Hour & Minute) -->
+  <path d="M16 10.5V16L20 18.2" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Center Chrono pivot point -->
+  <circle cx="16" cy="16" r="1.6" fill="#38bdf8"/>
+</svg>

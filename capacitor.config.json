@@ -1,6 +1,6 @@
 {
-  "appId": "za.timesheet",
-  "appName": "ZA Biweekly Timesheet",
+  "appId": "com.chronos.timesheet",
+  "appName": "Chronos Biweekly Timesheet",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
