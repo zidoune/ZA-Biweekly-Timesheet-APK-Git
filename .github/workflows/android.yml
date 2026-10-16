@@ -1,10 +1,11 @@
 
 name: Build Android APK
 
-on:
+"on":
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -13,18 +14,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-- uses: actions/setup-node@v6
-  with:
-    node-version: 22
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
 
-- uses: actions/setup-java@v5
-  with:
-    distribution: temurin
-    java-version: 21
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
 
-- uses: android-actions/setup-android@v3
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Install dependencies
         run: npm install
@@ -32,10 +37,13 @@ jobs:
       - name: Build web app
         run: npm run build
 
-      - name: Add Android platform
-        run: npx cap add android
+      - name: Add Android platform if missing
+        run: |
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
 
-      - name: Sync Android
+      - name: Sync Capacitor
         run: npx cap sync android
 
       - name: Build APK
@@ -44,8 +52,9 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: za-timesheet-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
