@@ -20,23 +20,6 @@ import { DailyHoursChart } from './components/DailyHoursChart';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { EnterForAnotherEmployeeModal } from './components/EnterForAnotherEmployeeModal';
 import { useLanguage } from './context/LanguageContext';
-import { useAuth } from './context/AuthContext';
-import {
-  subscribeUserProfile,
-  saveUserProfile,
-  subscribeProjects,
-  saveProject as firestoreSaveProject,
-  subscribeEntries,
-  saveEntry as firestoreSaveEntry,
-  deleteEntry as firestoreDeleteEntry,
-  subscribeDaysOff,
-  saveDayOff as firestoreSaveDayOff,
-  deleteDayOff as firestoreDeleteDayOff,
-  subscribeManagedEmployees,
-  saveManagedEmployee as firestoreSaveManagedEmployee,
-  deleteManagedEmployee as firestoreDeleteManagedEmployee,
-  initializeUserDataIfEmpty,
-} from './services/firestoreService';
 import {
   BiweeklyPeriod,
   DayOff,
@@ -121,7 +104,7 @@ export default function App() {
   }, [activeEmployeeId]);
 
   // Automatic on-device safety backup: refreshed whenever timesheet data changes.
-  // This is a local recovery snapshot; signed-in users may also sync through Firebase.
+  // This is a local recovery snapshot stored only on this device.
   useEffect(() => {
     try {
       const backup = {
@@ -135,57 +118,6 @@ export default function App() {
       console.warn('Automatic local backup could not be updated:', error);
     }
   }, [profile, projects, entries, daysOff, managedEmployees, activeEmployeeId]);
-
-  const { user, signInWithGoogle } = useAuth();
-  const [showSyncBanner, setShowSyncBanner] = useState<boolean>(true);
-
-  // Synchronize with Firestore when user is authenticated
-  useEffect(() => {
-    if (!user) return;
-
-    // Bootstraps user collections if empty
-    initializeUserDataIfEmpty(
-      user.uid,
-      profile,
-      projects,
-      entries,
-      daysOff
-    ).catch(console.error);
-
-    const unsubProfile = subscribeUserProfile(user.uid, (cloudProfile) => {
-      if (cloudProfile) {
-        setProfile(cloudProfile);
-      }
-    });
-
-    const unsubProjects = subscribeProjects(user.uid, (cloudProjects) => {
-      if (cloudProjects.length > 0) {
-        setProjects(cloudProjects);
-      }
-    });
-
-    const unsubEntries = subscribeEntries(user.uid, (cloudEntries) => {
-      setEntries(cloudEntries);
-    });
-
-    const unsubDaysOff = subscribeDaysOff(user.uid, (cloudDaysOff) => {
-      setDaysOff(cloudDaysOff);
-    });
-
-    const unsubEmployees = subscribeManagedEmployees(user.uid, (cloudEmps) => {
-      if (cloudEmps.length > 0) {
-        setManagedEmployees(cloudEmps);
-      }
-    });
-
-    return () => {
-      unsubProfile();
-      unsubProjects();
-      unsubEntries();
-      unsubDaysOff();
-      unsubEmployees();
-    };
-  }, [user?.uid]);
 
   // 3. Modals state
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
@@ -313,17 +245,11 @@ export default function App() {
         : [...prev, targetEntry];
     });
 
-    if (user) {
-      firestoreSaveEntry(user.uid, targetEntry).catch(console.error);
-    }
   };
 
   const handleDeleteEntry = (entryId: string) => {
     if (window.confirm('Are you sure you want to delete this punch record?')) {
       setEntries((prev) => prev.filter((e) => e.id !== entryId));
-      if (user) {
-        firestoreDeleteEntry(user.uid, entryId).catch(console.error);
-      }
     }
   };
 
@@ -335,9 +261,6 @@ export default function App() {
       id: `entry-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     };
     setEntries((prev) => [...prev, newEntry]);
-    if (user) {
-      firestoreSaveEntry(user.uid, newEntry).catch(console.error);
-    }
   };
 
   const handleAddNewEmployee = (newEmp: ManagedEmployee) => {
@@ -345,9 +268,6 @@ export default function App() {
       ...prev.filter((e) => e.employeeId.toUpperCase() !== newEmp.employeeId.toUpperCase()),
       newEmp,
     ]);
-    if (user) {
-      firestoreSaveManagedEmployee(user.uid, newEmp).catch(console.error);
-    }
   };
 
   const handleDeleteEmployee = (empDocId: string) => {
@@ -355,9 +275,6 @@ export default function App() {
     setManagedEmployees((prev) => prev.filter((e) => e.id !== empDocId));
     if (toDelete && activeEmployeeId === toDelete.employeeId) {
       setActiveEmployeeId(null);
-    }
-    if (user) {
-      firestoreDeleteManagedEmployee(user.uid, empDocId).catch(console.error);
     }
   };
 
@@ -384,26 +301,17 @@ export default function App() {
       const filtered = prev.filter((d) => d.date !== newDayOff.date);
       return [...filtered, newDayOff];
     });
-    if (user) {
-      firestoreSaveDayOff(user.uid, newDayOff).catch(console.error);
-    }
   };
 
   const handleRemoveDayOff = (targetDateISO: string) => {
     const dayOffToRemove = daysOff.find((d) => d.date === targetDateISO);
     setDaysOff((prev) => prev.filter((d) => d.date !== targetDateISO));
-    if (user && dayOffToRemove) {
-      firestoreDeleteDayOff(user.uid, dayOffToRemove.id || dayOffToRemove.date).catch(console.error);
-    }
   };
 
   const handleUpdateProfile = (newProfile: TimesheetProfile) => {
     const prevEmployer = profile.employerName;
     setProfile(newProfile);
     saveProfile(newProfile);
-    if (user) {
-      saveUserProfile(user.uid, newProfile).catch(console.error);
-    }
     // If employer / client name changed, sync projects belonging to previous client or Oakridge Custom Homes
     if (newProfile.employerName && prevEmployer && newProfile.employerName !== prevEmployer) {
       const updatedProjects = projects.map((proj) =>
@@ -423,9 +331,6 @@ export default function App() {
     const updatedProfile = { ...profile, employerName: trimmed };
     setProfile(updatedProfile);
     saveProfile(updatedProfile);
-    if (user) {
-      saveUserProfile(user.uid, updatedProfile).catch(console.error);
-    }
     const updatedProjects = projects.map((proj) =>
       proj.client.toLowerCase() === prevEmployer.toLowerCase() ||
       proj.client.toLowerCase() === 'oakridge custom homes'
@@ -437,11 +342,6 @@ export default function App() {
 
   const handleSaveProjects = (newProjects: Project[]) => {
     setProjects(newProjects);
-    if (user) {
-      for (const prj of newProjects) {
-        firestoreSaveProject(user.uid, prj).catch(console.error);
-      }
-    }
   };
 
   // 6. Settings & Reset Actions
@@ -550,51 +450,6 @@ export default function App() {
                 className="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-slate-900 dark:bg-blue-600 text-white hover:bg-slate-800 dark:hover:bg-blue-500 shadow-xs transition-colors"
               >
                 Back to My Timesheet ({profile.employeeName.split(' ')[0]})
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Cloud Sync & Authentication Banner */}
-        {!user && showSyncBanner && (
-          <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 rounded-xl p-3 sm:p-4 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-blue-800/60">
-            <div className="flex items-start sm:items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/>
-                </svg>
-              </div>
-              <div>
-                <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                  <span>Firebase Firestore & Auth Active</span>
-                  <span className="text-[10px] bg-blue-500/30 text-blue-200 border border-blue-400/30 px-1.5 py-0.5 rounded font-mono font-semibold">Online Sync</span>
-                </h4>
-                <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 leading-relaxed">
-                  Sign in with Google to automatically backup and sync your timesheet punches, hourly rates, and custom projects with Cloud Firestore.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-              <button
-                type="button"
-                onClick={() => signInWithGoogle()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-slate-900 text-xs font-bold hover:bg-slate-100 shadow-xs transition-all"
-              >
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                </svg>
-                <span>{t.signInWithGoogle}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowSyncBanner(false)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-md transition-colors"
-                title="Dismiss"
-              >
-                ✕
               </button>
             </div>
           </div>
