@@ -80,8 +80,8 @@ export const INITIAL_PROJECTS: Project[] = [
 ];
 
 export const INITIAL_PROFILE: TimesheetProfile = {
-  employeeName: 'Zied Ammar',
-  employeeEmail: 'zied.ammar@gmail.com',
+  employeeName: '[ Name and last name ]',
+  employeeEmail: 'example@gmail.com',
   employeePhone: '(555) 234-5678',
   employerName: 'Oakridge Custom Homes',
   employerPhone: '(555) 890-1234',
@@ -110,7 +110,7 @@ export const INITIAL_MANAGED_EMPLOYEES: ManagedEmployee[] = [
     employeePhone: '(555) 345-6789',
     title: 'Journeyman Framer',
     department: 'Structural Carpentry',
-    supervisorName: 'Zied Ammar',
+    supervisorName: '[ Name and last name ]',
     defaultHourlyRate: 85,
     dailyStandardHours: 8.0,
     notes: 'Primary framing & subfloor lead',
@@ -124,7 +124,7 @@ export const INITIAL_MANAGED_EMPLOYEES: ManagedEmployee[] = [
     employeePhone: '(555) 456-7890',
     title: 'Finish & Trim Carpenter',
     department: 'Interior & Exterior Millwork',
-    supervisorName: 'Zied Ammar',
+    supervisorName: '[ Name and last name ]',
     defaultHourlyRate: 88,
     dailyStandardHours: 8.0,
     notes: 'Specializes in roof trusses & wall squaring',
