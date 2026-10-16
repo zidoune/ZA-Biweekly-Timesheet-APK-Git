@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import {
   X,
   Download,
+  ExternalLink,
   Printer,
   FileText,
   CheckCircle2,
@@ -50,6 +51,7 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
   const { t, language, dateLocale } = useLanguage();
   const [isExporting, setIsExporting] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
 
   // 1. Project Notes Toggle & Selection State (Disabled by default to keep PDF compact)
   const [includeProjectNotes, setIncludeProjectNotes] = useState<boolean>(false);
@@ -231,6 +233,9 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
 
       const cleanEmployee = profile.employeeName.replace(/\s+/g, '_');
       const fileName = `Timesheet_Audit_${cleanEmployee}_Period_${period.startDate}_to_${period.endDate}.pdf`;
+      // Keep a viewable copy so the user can open the generated PDF again after downloading.
+      const previewUrl = doc.output('bloburl');
+      setPdfPreviewUrl(previewUrl);
       doc.save(fileName);
 
       setDownloadSuccess(true);
@@ -323,11 +328,21 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
 
         {/* Success Banner */}
         {downloadSuccess && (
-          <div className="bg-emerald-50 dark:bg-emerald-950/60 border-b border-emerald-200 dark:border-emerald-800 px-6 py-2 text-xs text-emerald-800 dark:text-emerald-200 flex items-center justify-between no-print animate-in fade-in">
+          <div className="bg-emerald-50 dark:bg-emerald-950/60 border-b border-emerald-200 dark:border-emerald-800 px-6 py-2 text-xs text-emerald-800 dark:text-emerald-200 flex items-center justify-between gap-3 no-print animate-in fade-in">
             <span className="flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              PDF file successfully generated and downloaded with your custom options!
+              PDF generated. If you don’t see it, check your device’s Downloads folder.
             </span>
+            {pdfPreviewUrl && (
+              <button
+                type="button"
+                onClick={() => window.open(pdfPreviewUrl, '_blank', 'noopener,noreferrer')}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700 px-3 py-1.5 font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/60"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Open PDF
+              </button>
+            )}
           </div>
         )}
 
