@@ -49,15 +49,56 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Build debug APK
+      - name: Build debug and release APKs
+        working-directory: android
         run: |
-          cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug assembleRelease
 
-      - name: Upload APK
+      - name: Sign release APK
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          KEYSTORE="$RUNNER_TEMP/za-timesheet-release.jks"
+          UNSIGNED="android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          ALIGNED="$RUNNER_TEMP/app-release-aligned.apk"
+          OUTPUT="android/app/build/outputs/apk/release/ZA-Biweekly-Timesheet-release.apk"
+
+          test -n "$KEYSTORE_BASE64"
+          test -n "$KEYSTORE_PASSWORD"
+          test -n "$KEY_ALIAS"
+          test -n "$KEY_PASSWORD"
+
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test -s "$KEYSTORE"
+          test -f "$UNSIGNED"
+
+          "$BUILD_TOOLS/zipalign" -f -v 4 "$UNSIGNED" "$ALIGNED"
+
+          "$BUILD_TOOLS/apksigner" sign \
+            --ks "$KEYSTORE" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --key-pass env:KEY_PASSWORD \
+            --out "$OUTPUT" \
+            "$ALIGNED"
+
+          "$BUILD_TOOLS/apksigner" verify --verbose "$OUTPUT"
+
+          rm -f "$KEYSTORE" "$ALIGNED"
+
+      - name: Upload APKs
         uses: actions/upload-artifact@v5
         with:
-          name: za-timesheet-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: za-timesheet-apks
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/release/ZA-Biweekly-Timesheet-release.apk
           if-no-files-found: error
