@@ -55,6 +55,21 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug assembleRelease
 
+
+      - name: Check signing configuration
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          test -n "$KEYSTORE_BASE64" || { echo "Missing keystore secret"; exit 1; }
+          test -n "$KEYSTORE_PASSWORD" || { echo "Missing keystore password"; exit 1; }
+          test -n "$KEY_ALIAS" || { echo "Missing key alias"; exit 1; }
+          test -n "$KEY_PASSWORD" || { echo "Missing key password"; exit 1; }
+          echo "All four signing secrets are present."
+
       - name: Sign release APK
         shell: bash
         env:
