@@ -33,3 +33,28 @@
     margin: 10mm;
   }
 }
+
+/* Keep the sticky app toolbar below Android/iOS status-bar content. */
+.app-safe-header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Branded loading screen used while the app initializes. */
+#app-startup-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: white;
+  background: radial-gradient(circle at 50% 35%, #1d4ed8 0%, #102b83 45%, #07133e 100%);
+  transition: opacity 220ms ease;
+}
+#app-startup-splash img { width: 112px; height: 112px; border-radius: 25px; }
+#app-startup-splash .startup-title { font-weight: 800; font-size: 1.35rem; letter-spacing: -.025em; }
+#app-startup-splash .startup-subtitle { color: #a7f3d0; font-weight: 700; margin-top: -.8rem; }
+#app-startup-splash .startup-loader { width: 22px; height: 22px; border: 3px solid #ffffff55; border-top-color: #fff; border-radius: 50%; animation: startup-spin .8s linear infinite; margin-top: 1rem; }
+@keyframes startup-spin { to { transform: rotate(360deg); } }

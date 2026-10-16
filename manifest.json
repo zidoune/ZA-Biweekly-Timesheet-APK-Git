@@ -1,25 +1,31 @@
 {
-  "background_color": "#ffffff",
+  "background_color": "#07133e",
   "dir": "auto",
   "display": "standalone",
-  "name": "Biweekly Timesheet &amp; Project Audit Log System",
+  "name": "ZA Biweekly Timesheet",
   "orientation": "any",
   "scope": "/",
-  "short_name": "BiweeklyTimesheet",
+  "short_name": "ZA Timesheet",
   "start_url": "/",
-  "theme_color": "#946800",
+  "theme_color": "#1237b5",
   "icons": [
     {
-      "src": "https://ais-dev-o32wg3m6ia2xg4j5kgowog-471017656567.us-east5.run.app/favicon.ico",
-      "type": "image/x-icon",
-      "isSquare": false,
-      "isPng": false,
-      "isWebp": false,
-      "isJpg": false,
-      "width": 0,
-      "is512x512": false,
-      "is256x256": false,
-      "is192x192": false
+      "src": "/pwa-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
   ],
   "id": "ZA-Biweekly-Timesheet",

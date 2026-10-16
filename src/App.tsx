@@ -120,6 +120,22 @@ export default function App() {
     saveActiveEmployeeId(activeEmployeeId);
   }, [activeEmployeeId]);
 
+  // Automatic on-device safety backup: refreshed whenever timesheet data changes.
+  // This is a local recovery snapshot; signed-in users may also sync through Firebase.
+  useEffect(() => {
+    try {
+      const backup = {
+        schemaVersion: 1,
+        appName: 'ZA Biweekly Timesheet',
+        backedUpAt: new Date().toISOString(),
+        profile, projects, entries, daysOff, managedEmployees, activeEmployeeId,
+      };
+      localStorage.setItem('za_timesheet_auto_backup_v1', JSON.stringify(backup));
+    } catch (error) {
+      console.warn('Automatic local backup could not be updated:', error);
+    }
+  }, [profile, projects, entries, daysOff, managedEmployees, activeEmployeeId]);
+
   const { user, signInWithGoogle } = useAuth();
   const [showSyncBanner, setShowSyncBanner] = useState<boolean>(true);
 
@@ -454,12 +470,14 @@ export default function App() {
         projects,
         entries,
         daysOff,
+        managedEmployees,
+        activeEmployeeId,
         exportedAt: new Date().toISOString(),
       },
       null,
       2
     );
-  }, [profile, projects, entries, daysOff]);
+  }, [profile, projects, entries, daysOff, managedEmployees, activeEmployeeId]);
 
   const handleImportData = (jsonStr: string) => {
     try {
@@ -468,6 +486,8 @@ export default function App() {
       if (parsed.entries) setEntries(parsed.entries);
       if (parsed.profile) setProfile(parsed.profile);
       if (parsed.daysOff && Array.isArray(parsed.daysOff)) setDaysOff(parsed.daysOff);
+      if (parsed.managedEmployees && Array.isArray(parsed.managedEmployees)) setManagedEmployees(parsed.managedEmployees);
+      if ('activeEmployeeId' in parsed) setActiveEmployeeId(parsed.activeEmployeeId ?? null);
     } catch (e) {
       console.error('Import error:', e);
       throw e;

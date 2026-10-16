@@ -85,6 +85,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         projects: parsed.projects || [],
         entries: parsed.entries || [],
         daysOff: parsed.daysOff || [],
+        managedEmployees: parsed.managedEmployees || [],
+        activeEmployeeId: parsed.activeEmployeeId ?? null,
         exportedAt: new Date().toISOString(),
       };
       const jsonString = JSON.stringify(exportPayload, null, 2);
@@ -118,6 +120,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       a.download = `timesheet_data_${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
+    }
+  };
+
+  const handleRestoreAutoBackup = () => {
+    try {
+      const raw = localStorage.getItem('za_timesheet_auto_backup_v1');
+      if (!raw) {
+        setImportStatus(language === 'fr' ? 'Aucune sauvegarde automatique trouvée.' : 'No automatic backup found on this device.');
+        return;
+      }
+      if (!window.confirm(language === 'fr' ? 'Restaurer la dernière sauvegarde automatique ? Les données actuelles seront remplacées.' : 'Restore the latest automatic backup? Current data will be replaced.')) return;
+      onImportData(raw);
+      setImportStatus(language === 'fr' ? 'Sauvegarde automatique restaurée.' : 'Automatic backup restored successfully.');
+      setTimeout(() => setImportStatus(null), 3500);
+    } catch (err) {
+      console.error('Error restoring automatic backup:', err);
+      setImportStatus(language === 'fr' ? 'Échec de la restauration.' : 'Failed to restore automatic backup.');
     }
   };
 
@@ -562,6 +581,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Data Management & Backup
             </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Automatic on-device backup updates whenever your profile, projects, or timesheet entries change. Export a JSON backup regularly to keep a copy outside your phone.</p>
 
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -573,6 +593,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               >
                 <Download className="w-3.5 h-3.5 text-blue-600" />
                 <span>Export Data</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleRestoreAutoBackup}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-violet-800 bg-violet-50 hover:bg-violet-100 border border-violet-200 rounded-lg shadow-2xs transition-colors"
+                title="Restore the most recent automatic on-device backup"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Restore Auto Backup</span>
               </button>
 
               <button

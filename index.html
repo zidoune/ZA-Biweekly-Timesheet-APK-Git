@@ -7,8 +7,9 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Chronos" />
+    <meta name="apple-mobile-web-app-title" content="ZA Biweekly Timesheet" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>Chronos Biweekly Timesheet & Project Audit</title>
     <meta name="description" content="Biweekly project timesheet with start/end time punch tracking, unpaid break deduction, 14-day pay periods, and exportable PDF audit logs." />
@@ -23,8 +24,15 @@
     <link rel="manifest" href="/manifest.json">
   </head>
   <body>
+    <div id="app-startup-splash" aria-label="Loading ZA Biweekly Timesheet">
+      <img src="/pwa-192x192.png" alt="" />
+      <div class="startup-title">ZA Biweekly</div>
+      <div class="startup-subtitle">Timesheet</div>
+      <div class="startup-loader" aria-hidden="true"></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>window.addEventListener('load', function () { var splash = document.getElementById('app-startup-splash'); if (splash) { splash.style.opacity = '0'; setTimeout(function () { splash.remove(); }, 250); } });</script>
   </body>
 </html>
 
