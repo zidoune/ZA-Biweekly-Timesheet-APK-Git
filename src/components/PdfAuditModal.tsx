@@ -1,4 +1,7 @@
 import React, { useState, useMemo } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 import {
   X,
   Download,
@@ -206,7 +209,7 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
     }
   };
 
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     setIsExporting(true);
     try {
       const customSigConfig: CustomSignatureConfig | undefined = customSignatureEnabled
@@ -233,13 +236,36 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
 
       const cleanEmployee = profile.employeeName.replace(/\s+/g, '_');
       const fileName = `Timesheet_Audit_${cleanEmployee}_Period_${period.startDate}_to_${period.endDate}.pdf`;
-      // Keep a viewable copy so the user can open the generated PDF again after downloading.
-      const previewUrl = doc.output('bloburl');
-      setPdfPreviewUrl(previewUrl);
-      doc.save(fileName);
-
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 4000);
+      if (Capacitor.isNativePlatform()) {
+        // Android WebView does not reliably save jsPDF blob downloads.
+        // Write the PDF to the app's Documents folder and open the native share/open sheet.
+        const pdfBase64 = doc.output('datauristring').split(',')[1];
+        const savedFile = await Filesystem.writeFile({
+          path: fileName,
+          data: pdfBase64,
+          directory: Directory.Documents,
+          recursive: true,
+        });
+        setPdfPreviewUrl(savedFile.uri);
+        setDownloadSuccess(true);
+        try {
+          await Share.share({
+            title: 'Timesheet PDF',
+            text: 'Your timesheet PDF has been saved. Choose an app to open or share it.',
+            url: savedFile.uri,
+            dialogTitle: 'Open or share timesheet PDF',
+          });
+        } catch (shareError) {
+          // The PDF is already saved even if the user dismisses the share sheet.
+          console.info('PDF saved; share sheet dismissed or unavailable.', shareError);
+        }
+      } else {
+        const previewUrl = doc.output('bloburl');
+        setPdfPreviewUrl(previewUrl);
+        doc.save(fileName);
+        setDownloadSuccess(true);
+      }
+      setTimeout(() => setDownloadSuccess(false), 8000);
     } catch (err) {
       console.error('Error generating PDF:', err);
       alert('Could not generate PDF. Please try printing directly.');
@@ -336,7 +362,13 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
             {pdfPreviewUrl && (
               <button
                 type="button"
-                onClick={() => window.open(pdfPreviewUrl, '_blank', 'noopener,noreferrer')}
+                onClick={async () => {
+                  if (Capacitor.isNativePlatform()) {
+                    await Share.share({ title: 'Timesheet PDF', url: pdfPreviewUrl, dialogTitle: 'Open timesheet PDF' });
+                  } else {
+                    window.open(pdfPreviewUrl, '_blank', 'noopener,noreferrer');
+                  }
+                }}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700 px-3 py-1.5 font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/60"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
