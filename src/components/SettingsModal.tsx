@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { TimesheetProfile } from '../types/timesheet';
 import { INITIAL_ENTRIES, INITIAL_PROJECTS, INITIAL_PROFILE } from '../utils/storage';
-import { downloadAllDataCsv } from '../utils/csvExport';
+import { convertAllDataJsonToCsv, downloadAllDataCsv } from '../utils/csvExport';
 import { useLanguage } from '../context/LanguageContext';
 
 interface SettingsModalProps {
@@ -161,13 +161,50 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }
   };
 
-  const handleDownloadCsv = () => {
+  const handleDownloadCsv = async () => {
     try {
-      downloadAllDataCsv(allDataJson, formData.employeeName || profile.employeeName);
+      // Build the export from the latest app data and the profile currently shown
+      // in Settings, so recently edited profile fields are not left stale in CSV.
+      const parsed = JSON.parse(allDataJson);
+      const exportPayload = {
+        ...parsed,
+        profile: { ...(parsed.profile || {}), ...formData },
+        exportedAt: new Date().toISOString(),
+      };
+      const csvContent = convertAllDataJsonToCsv(JSON.stringify(exportPayload));
+      const cleanName = (formData.employeeName || profile.employeeName || 'timesheet')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '');
+      const dateStr = new Date().toISOString().split('T')[0];
+      const fileName = `za_timesheet_data_${cleanName}_${dateStr}.csv`;
+      // UTF-8 BOM helps Excel display names and notes correctly.
+      const csvWithBom = '\\uFEFF' + csvContent;
+
+      if (Capacitor.isNativePlatform()) {
+        // Android WebView downloads from Blob URLs are unreliable; create a real
+        // cache file and use the native share sheet to save/share the CSV.
+        const base64 = btoa(unescape(encodeURIComponent(csvWithBom)));
+        const saved = await Filesystem.writeFile({
+          path: fileName,
+          data: base64,
+          directory: Directory.Cache,
+          recursive: true,
+        });
+        await Share.share({
+          title: 'ZA Biweekly Timesheet CSV Export',
+          text: 'Export of timesheet entries, days off, projects, profile settings, and audit totals.',
+          url: saved.uri,
+          dialogTitle: 'Save or share CSV export',
+        });
+      } else {
+        downloadAllDataCsv(JSON.stringify(exportPayload), formData.employeeName || profile.employeeName);
+      }
+
       setImportStatus(
         language === 'fr'
-          ? 'Exportation CSV téléchargée avec succès !'
-          : 'CSV export downloaded successfully!'
+          ? 'Exportation CSV prête à enregistrer ou partager !'
+          : 'CSV export ready to save or share!'
       );
       setTimeout(() => setImportStatus(null), 3500);
     } catch (err) {
@@ -175,7 +212,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       setImportStatus(
         language === 'fr'
           ? "Échec de l'exportation CSV"
-          : 'Failed to generate CSV export'
+          : 'Failed to generate CSV export. Please try again.'
       );
     }
   };
