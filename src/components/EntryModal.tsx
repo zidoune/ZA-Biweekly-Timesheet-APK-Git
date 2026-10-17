@@ -127,23 +127,23 @@ export const EntryModal: React.FC<EntryModalProps> = ({
               <button
                 type="button"
                 onClick={() => applyPreset('08:00', '17:00', 60)}
-                className="py-1 px-2 text-[11px] font-medium bg-slate-50 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300 border border-slate-200 rounded-lg text-slate-700 transition-colors"
+                className="min-h-[48px] px-1.5 py-2 text-xs sm:text-[11px] font-semibold bg-slate-50 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300 border border-slate-200 rounded-lg text-slate-700 transition-colors active:scale-[0.98]"
               >
-                8:00 - 17:00 (8.0h)
+                8:00–17:00 · 8h
               </button>
               <button
                 type="button"
                 onClick={() => applyPreset('08:00', '16:30', 30)}
                 className="py-1 px-2 text-[11px] font-medium bg-slate-50 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300 border border-slate-200 rounded-lg text-slate-700 transition-colors"
               >
-                8:00 - 16:30 (8.0h)
+                8:00–16:30 · 8h
               </button>
               <button
                 type="button"
                 onClick={() => applyPreset('08:00', '12:00', 0)}
                 className="py-1 px-2 text-[11px] font-medium bg-slate-50 hover:bg-amber-50 hover:text-amber-800 hover:border-amber-300 border border-slate-200 rounded-lg text-slate-700 transition-colors"
               >
-                Half Day (4.0h)
+                Half day · 4h
               </button>
             </div>
           </div>
@@ -158,7 +158,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                 value={projectId}
                 onChange={(e) => setProjectId(e.target.value)}
                 required
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                className="w-full min-h-[48px] bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-base font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               >
                 {projects.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -179,7 +179,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                className="w-full min-h-[48px] bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-base font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               />
               {(() => {
                 const dayOff = daysOff.find((d) => d.date === date);
@@ -216,7 +216,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
                 required
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                className="w-full min-h-[48px] bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-base font-mono font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
               />
               <span className="text-[11px] text-slate-400 mt-0.5 block font-mono">
                 {formatTime12h(startTime)}
@@ -258,7 +258,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                   key={mins}
                   type="button"
                   onClick={() => setBreakMinutes(mins)}
-                  className={`py-1.5 text-xs font-medium rounded-md transition-colors text-center ${
+                  className={`min-h-[44px] py-2 text-xs font-semibold rounded-md transition-colors text-center ${
                     breakMinutes === mins
                       ? 'bg-white text-slate-900 shadow-xs font-bold'
                       : 'text-slate-600 hover:text-slate-900'
@@ -298,7 +298,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Subfloor joists layout, shear wall framing, electrical rough-in"
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+              className="w-full min-h-[48px] bg-slate-50 border border-slate-200 rounded-lg px-3 py-3 text-base text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             />
             <span className="text-[10px] text-slate-400 mt-0.5 block">
               Can be included in the Biweekly Audit PDF report.
@@ -320,17 +320,17 @@ export const EntryModal: React.FC<EntryModalProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+          <div className="pt-3 flex items-center justify-stretch sm:justify-end gap-2 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+              className="min-h-[48px] px-5 py-3 text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors"
+              className="min-h-[48px] px-5 py-3 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors flex-1 sm:flex-initial"
             >
               {editingEntry ? 'Update Punch' : 'Save Punch Entry'}
             </button>
