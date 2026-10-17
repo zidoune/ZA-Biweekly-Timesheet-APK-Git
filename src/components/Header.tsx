@@ -45,9 +45,6 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="app-safe-header bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex flex-col items-stretch gap-2 py-2 lg:flex-row lg:items-center lg:justify-between lg:py-0 lg:min-h-16">
-          {/* Brand icon and “Chronos” wordmark removed; keep header actions aligned. */}
-          <div className="flex-1 min-w-0" aria-hidden="true" />
-
           {/* Zone 2: Pay Period Navigator & Period Selector (Desktop Center View) */}
           <div className="hidden md:flex items-center justify-center gap-2 lg:justify-start">
             <div className="inline-flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1">
