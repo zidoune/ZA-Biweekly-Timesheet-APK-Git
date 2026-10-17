@@ -47,7 +47,7 @@ export function generateTimesheetPdf({
   const resolvedCustomSignature = customSignature
     ? {
         ...customSignature,
-        name: customSignature.name?.trim() === 'Mark Callahan'
+        name: customSignature.name?.trim() === 'Jacob Demontigny'
           ? 'Jacob Demontigny'
           : customSignature.name,
       }
