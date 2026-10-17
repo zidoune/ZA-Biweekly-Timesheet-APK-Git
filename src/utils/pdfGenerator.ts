@@ -625,7 +625,7 @@ export function generateTimesheetPdf({
   doc.setFontSize(6.5);
   doc.setTextColor(148, 163, 184);
   doc.text(
-    `Chronos Timesheet Audit Engine · Generated ${new Date().toLocaleString()} · Biweekly Period ${period.startDate} to ${period.endDate}`,
+    `Demontigny Carpentry . Timesheet Audit . Generated ${new Date().toLocaleString()} · Biweekly Period ${period.startDate} to ${period.endDate}`,
     marginX,
     pageHeight - 8
   );
