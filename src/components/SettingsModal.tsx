@@ -179,7 +179,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       const dateStr = new Date().toISOString().split('T')[0];
       const fileName = `za_timesheet_data_${cleanName}_${dateStr}.csv`;
       // UTF-8 BOM helps Excel display names and notes correctly.
-      const csvWithBom = '\\uFEFF' + csvContent;
+      const csvWithBom = '\uFEFF' + csvContent;
 
       if (Capacitor.isNativePlatform()) {
         // Android WebView downloads from Blob URLs are unreliable; create a real
