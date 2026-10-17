@@ -277,10 +277,10 @@ export function generateTimesheetPdf({
   const drawTableHeader = () => {
     // High-contrast navy table header remains clear in color and grayscale print.
     doc.setFillColor(15, 23, 42);
-    doc.rect(marginX, currentY, pageWidth - marginX * 2, 6, 'F');
+    doc.rect(marginX, currentY, pageWidth - marginX * 2, 5.5, 'F');
     doc.setDrawColor(34, 211, 238);
     doc.setLineWidth(0.45);
-    doc.line(marginX, currentY + 6, pageWidth - marginX, currentY + 6);
+    doc.line(marginX, currentY + 5.5, pageWidth - marginX, currentY + 5.5);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
@@ -294,10 +294,10 @@ export function generateTimesheetPdf({
           : col.align === 'right'
           ? colX + col.width - 2
           : colX + 2;
-      doc.text(col.header, textX, currentY + 4.2, { align: col.align as any });
+      doc.text(col.header, textX, currentY + 3.9, { align: col.align as any });
       colX += col.width;
     });
-    currentY += 6;
+    currentY += 5.5;
   };
 
   drawTableHeader();
@@ -309,18 +309,18 @@ export function generateTimesheetPdf({
 
     if (dayEntries.length === 0) {
       // Show empty day row (especially for weekends or off-days)
-      checkPageBreak(4);
+      checkPageBreak(3.5);
 
       if (altRow) {
         doc.setFillColor(250, 250, 250);
-        doc.rect(marginX, currentY, pageWidth - marginX * 2, 4.2, 'F');
+        doc.rect(marginX, currentY, pageWidth - marginX * 2, 3.5, 'F');
       }
       altRow = !altRow;
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
       doc.setTextColor(148, 163, 184); // slate-400
-      doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 3.2);
+      doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 2.7);
 
       const dayOff = dayOffMap.get(daySchedule.date);
       if (dayOff) {
@@ -328,26 +328,26 @@ export function generateTimesheetPdf({
         if (isDidNotWork) {
           doc.setTextColor(225, 29, 72); // rose-600
           doc.setFont('helvetica', 'bold');
-          doc.text(`[Didn't Work] ${dayOff.notes || dayOff.reason || "Didn't work"}`, marginX + 28, currentY + 3.2);
+          doc.text(`[Didn't Work] ${dayOff.notes || dayOff.reason || "Didn't work"}`, marginX + 28, currentY + 2.7);
         } else {
           doc.setTextColor(180, 83, 9); // amber-700
           doc.setFont('helvetica', 'bold');
-          doc.text(`[Day Off] ${dayOff.reason || 'Scheduled Day Off'}`, marginX + 28, currentY + 3.2);
+          doc.text(`[Day Off] ${dayOff.reason || 'Scheduled Day Off'}`, marginX + 28, currentY + 2.7);
         }
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(148, 163, 184);
       } else if (daySchedule.isWeekend) {
-        doc.text('Weekend — No punch recorded', marginX + 28, currentY + 3.2);
+        doc.text('Weekend — No punch recorded', marginX + 28, currentY + 2.7);
       } else {
-        doc.text('Off-duty / Scheduled off', marginX + 28, currentY + 3.2);
+        doc.text('Off-duty / Scheduled off', marginX + 28, currentY + 2.7);
       }
 
       doc.setTextColor(148, 163, 184); // slate-400 gray for 0.00
-      doc.text('0.00', pageWidth - marginX - 2, currentY + 3.2, { align: 'right' });
+      doc.text('0.00', pageWidth - marginX - 2, currentY + 2.7, { align: 'right' });
 
       doc.setDrawColor(241, 245, 249);
-      doc.line(marginX, currentY + 4.2, pageWidth - marginX, currentY + 4.2);
-      currentY += 4.2;
+      doc.line(marginX, currentY + 3.5, pageWidth - marginX, currentY + 3.5);
+      currentY += 3.5;
     } else {
       dayEntries.forEach((entry) => {
         const proj = projectMap.get(entry.projectId);
@@ -358,7 +358,7 @@ export function generateTimesheetPdf({
           : 'General';
         const clientName = 'Demontigny Carpentry';
 
-        const rowHeight = 4.4;
+        const rowHeight = 3.6;
 
         checkPageBreak(rowHeight);
 
@@ -369,30 +369,30 @@ export function generateTimesheetPdf({
         altRow = !altRow;
 
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(7.5);
+        doc.setFontSize(7);
         doc.setTextColor(15, 23, 42);
-        doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 3.5);
+        doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 2.8);
 
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(7.5);
+        doc.setFontSize(7);
         doc.setTextColor(30, 41, 59);
 
         // Project column truncated if needed
         const projTrunc = projName.length > 32 ? projName.substring(0, 30) + '...' : projName;
-        doc.text(projTrunc, marginX + 28, currentY + 3.5);
+        doc.text(projTrunc, marginX + 28, currentY + 2.8);
 
         // Client column
         doc.setTextColor(71, 85, 105);
         const clientTrunc = clientName.length > 22 ? clientName.substring(0, 20) + '...' : clientName;
-        doc.text(clientTrunc, marginX + 26 + 54 + 2, currentY + 3.5);
+        doc.text(clientTrunc, marginX + 26 + 54 + 2, currentY + 2.8);
 
         // Punch Times
         doc.setFont('courier', 'normal');
         doc.setFontSize(7.5);
         doc.setTextColor(30, 41, 59);
         const inColX = marginX + 26 + 54 + 37.9;
-        doc.text(formatTime12h(entry.startTime), inColX + 9, currentY + 3.5, { align: 'center' });
-        doc.text(formatTime12h(entry.endTime), inColX + 18 + 9, currentY + 3.5, { align: 'center' });
+        doc.text(formatTime12h(entry.startTime), inColX + 9, currentY + 2.8, { align: 'center' });
+        doc.text(formatTime12h(entry.endTime), inColX + 18 + 9, currentY + 2.8, { align: 'center' });
 
         doc.setFont('helvetica', 'normal');
         const effBreak = getEffectiveBreakMinutes(entry);
@@ -401,7 +401,7 @@ export function generateTimesheetPdf({
         doc.text(
           breakText,
           inColX + 36 + 9,
-          currentY + 3.5,
+          currentY + 2.8,
           { align: 'center' }
         );
 
@@ -417,7 +417,7 @@ export function generateTimesheetPdf({
         doc.text(
           `${displayNet}`,
           pageWidth - marginX - 2,
-          currentY + 3.5,
+          currentY + 2.8,
           { align: 'right' }
         );
 
