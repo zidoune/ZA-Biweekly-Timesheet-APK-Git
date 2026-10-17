@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { PublicFile } from '../utils/publicFile';
-import { Share } from '@capacitor/share';
 import {
   X,
   Download,
@@ -361,10 +360,26 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
               <button
                 type="button"
                 onClick={async () => {
-                  if (Capacitor.isNativePlatform()) {
-                    await Share.share({ title: 'Timesheet PDF', url: pdfPreviewUrl, dialogTitle: 'Open timesheet PDF' });
-                  } else {
-                    window.open(pdfPreviewUrl, '_blank', 'noopener,noreferrer');
+                  try {
+                    if (Capacitor.isNativePlatform()) {
+                      await PublicFile.shareFile({
+                        uri: pdfPreviewUrl,
+                        mimeType: 'application/pdf',
+                        title: 'Timesheet PDF',
+                      });
+                    } else {
+                      const opened = window.open(pdfPreviewUrl, '_blank', 'noopener,noreferrer');
+                      if (!opened) {
+                        const link = document.createElement('a');
+                        link.href = pdfPreviewUrl;
+                        link.target = '_blank';
+                        link.rel = 'noopener noreferrer';
+                        link.click();
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Could not open Android PDF share sheet:', error);
+                    alert('The PDF was saved successfully, but Android could not open the share menu. You can find it in Documents/Timesheet.');
                   }
                 }}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700 px-3 py-1.5 font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/60"
