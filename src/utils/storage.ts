@@ -88,7 +88,7 @@ export const INITIAL_PROFILE: TimesheetProfile = {
   employeeId: 'EMP-001',
   title: 'Site Superintendent / Project Lead',
   department: 'Residential Construction Division',
-  supervisorName: 'Mark Callahan, General Contractor',
+  supervisorName: 'Jacob Demontigny',
   targetWorkingDays: 10,
   dailyStandardHours: 8.0,
   defaultBreakMinutes: 60,
@@ -379,6 +379,10 @@ export function loadProfile(): TimesheetProfile {
       employeePhone: parsed.employeePhone || INITIAL_PROFILE.employeePhone,
       employerName: parsed.employerName || INITIAL_PROFILE.employerName,
       employerPhone: parsed.employerPhone || INITIAL_PROFILE.employerPhone,
+      supervisorName:
+        parsed.supervisorName === 'Mark Callahan, General Contractor'
+          ? 'Jacob Demontigny'
+          : parsed.supervisorName || INITIAL_PROFILE.supervisorName,
       defaultHourlyRate: (parsed.defaultHourlyRate === 95 || parsed.defaultHourlyRate == null) ? 30 : parsed.defaultHourlyRate,
       overtimeThreshold: parsed.overtimeThreshold ?? INITIAL_PROFILE.overtimeThreshold,
       overtimeRateMultiplier: parsed.overtimeRateMultiplier ?? INITIAL_PROFILE.overtimeRateMultiplier,
