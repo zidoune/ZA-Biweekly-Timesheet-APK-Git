@@ -106,6 +106,8 @@ export const PeriodSummaryCards: React.FC<PeriodSummaryCardsProps> = ({
   // Gross Pay: strictly Total Net Hours multiplied by Base Hourly Rate
   const grossPay = totalNetHours * baseHourlyRate;
   const totalPayment = grossPay;
+  // Estimated net pay applies the requested flat 18.8% deduction to gross pay.
+  const estimatedNetPay = grossPay * (1 - 0.188);
 
   const progressPercent = targetHours > 0
     ? Math.min(100, Math.round((totalNetHours / targetHours) * 100))
@@ -574,6 +576,42 @@ export const PeriodSummaryCards: React.FC<PeriodSummaryCardsProps> = ({
               <span className="font-mono text-emerald-900 font-medium pl-1">{totalNetHours.toFixed(2)}h × {profile.currencySymbol || '$'}{baseHourlyRate}/hr</span>
               <span className="font-mono font-bold text-emerald-700 tabular-nums bg-white px-1.5 py-0.5 rounded border border-emerald-200/60 shadow-2xs">
                 = {profile.currencySymbol || '$'}{grossPay.toLocaleString(language === 'fr' ? 'fr-CA' : 'en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Estimated Net Pay: Gross Pay less the fixed 18.8% deduction */}
+        <div className="bg-gradient-to-b from-cyan-50/70 via-white to-white border border-cyan-200/90 rounded-xl p-3 sm:p-4 shadow-xs flex flex-col justify-between hover:border-cyan-300 transition-colors">
+          <div>
+            <div className="flex items-center justify-between mb-1 gap-1.5">
+              <span className="text-[10px] sm:text-[11px] font-bold text-cyan-800 uppercase tracking-wider leading-snug">
+                ESTIMATE NET PAY
+              </span>
+              <div className="w-6 h-6 rounded-lg bg-cyan-100 text-cyan-700 flex items-center justify-center shrink-0 border border-cyan-200/60 shadow-2xs">
+                <DollarSign className="w-3.5 h-3.5 text-cyan-700 shrink-0" />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-1.5 sm:gap-2 mt-0.5 flex-wrap">
+              <span className="font-mono text-xl sm:text-2xl font-black text-cyan-700 tabular-nums">
+                {profile.currencySymbol || '$'}
+                {estimatedNetPay.toLocaleString(language === 'fr' ? 'fr-CA' : 'en-CA', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
+            </div>
+          </div>
+          <div className="mt-2.5 sm:mt-3 pt-2 border-t border-cyan-100 space-y-1">
+            <div className="flex items-center justify-between text-[10px] sm:text-xs bg-cyan-50/60 p-1 rounded-md border border-cyan-100/70">
+              <span className="font-mono text-cyan-900 font-medium pl-1">
+                {language === 'fr' ? 'Déduction estimée' : 'Estimated deduction'} (18.8%)
+              </span>
+              <span className="font-mono font-bold text-cyan-800 tabular-nums bg-white px-1.5 py-0.5 rounded border border-cyan-200/60 shadow-2xs">
+                −{(grossPay * 0.188).toLocaleString(language === 'fr' ? 'fr-CA' : 'en-CA', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </span>
             </div>
           </div>
