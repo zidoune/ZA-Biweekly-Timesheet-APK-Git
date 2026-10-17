@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 import {
   X,
   User,
@@ -76,7 +79,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     onClose();
   };
 
-  const handleExportData = () => {
+  const handleExportData = async () => {
     try {
       const parsed = JSON.parse(allDataJson);
       // Full current state: entries, projects, profile, daysOff
@@ -90,20 +93,38 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         exportedAt: new Date().toISOString(),
       };
       const jsonString = JSON.stringify(exportPayload, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
       const cleanName = (formData.employeeName || profile.employeeName || 'timesheet')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '_')
         .replace(/^_+|_+$/g, '');
       const dateStr = new Date().toISOString().split('T')[0];
-      a.href = url;
-      a.download = `timesheet_data_${cleanName}_${dateStr}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const fileName = `timesheet_data_${cleanName}_${dateStr}.json`;
+      if (Capacitor.isNativePlatform()) {
+        // Create a real file, then let Android's share sheet save it to Files/Drive/email.
+        const base64 = btoa(unescape(encodeURIComponent(jsonString)));
+        const saved = await Filesystem.writeFile({
+          path: fileName,
+          data: base64,
+          directory: Directory.Cache,
+          recursive: true,
+        });
+        await Share.share({
+          title: 'ZA Biweekly Timesheet Backup',
+          text: 'Save this backup file somewhere safe. Use Import JSON to restore it later.',
+          url: saved.uri,
+          dialogTitle: 'Save or share timesheet backup',
+        });
+      } else {
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
 
       setImportStatus(
         language === 'fr'
@@ -166,8 +187,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     reader.onload = (event) => {
       try {
         const text = event.target?.result as string;
+        const backup = JSON.parse(text);
+        if (!backup || typeof backup !== 'object' || !backup.profile || !Array.isArray(backup.projects) || !Array.isArray(backup.entries) || !Array.isArray(backup.daysOff)) {
+          throw new Error('Invalid backup format');
+        }
+        if (!window.confirm(language === 'fr' ? 'Importer cette sauvegarde remplacera les données actuelles. Continuer ?' : 'Restoring this backup will replace your current timesheet data. Continue?')) return;
         onImportData(text);
-        setImportStatus('Backup successfully restored!');
+        setImportStatus(language === 'fr' ? 'Sauvegarde restaurée avec succès !' : 'Backup successfully restored!');
         setTimeout(() => setImportStatus(null), 3000);
       } catch (err) {
         setImportStatus('Failed to parse backup file');
