@@ -5,7 +5,6 @@ import {
   FileDown,
   Briefcase,
   Settings,
-  Clock,
   TrendingUp,
   Smartphone,
 } from 'lucide-react';
@@ -57,34 +56,8 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="app-safe-header bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-3">
-          {/* Zone 1: Wordmark & Brand */}
-          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-            <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-slate-900 text-white flex items-center justify-center shadow-xs">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
-              {isOvertime && (
-                <span
-                  className="absolute -top-1 -right-1 flex h-3 w-3"
-                  title={`${t.headerOvertimeBadge}: ${totalPeriodHours.toFixed(1)}h (>80h threshold)`}
-                >
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 border-2 border-white"></span>
-                </span>
-              )}
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="font-bold text-slate-900 text-sm sm:text-base tracking-tight whitespace-nowrap">
-                  {t.appTitle}
-                </span>
-                <span className="text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 rounded-sm bg-slate-100 text-slate-700 tracking-wide uppercase hidden min-[420px]:inline-block">
-                  {t.appSubtitle}
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-500 hidden sm:block whitespace-nowrap">
-                {t.cycleInfo}
-              </p>
-            </div>
-          </div>
+          {/* Brand icon and “Chronos” wordmark removed; keep header actions aligned. */}
+          <div className="flex-1 min-w-0" aria-hidden="true" />
 
           {/* Zone 2: Pay Period Navigator & Period Selector (Desktop Center View) */}
           <div className="hidden md:flex items-center gap-2">
