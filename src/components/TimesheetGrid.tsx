@@ -81,7 +81,7 @@ export const TimesheetGrid: React.FC<TimesheetGridProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('all')}
-            className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap text-center ${
+            className={`flex-1 sm:flex-initial min-h-[44px] px-2.5 sm:px-3 py-2 text-xs sm:text-sm font-semibold rounded-md transition-colors whitespace-nowrap text-center ${
               activeTab === 'all'
                 ? 'bg-white text-slate-900 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
@@ -118,7 +118,7 @@ export const TimesheetGrid: React.FC<TimesheetGridProps> = ({
         <button
           type="button"
           onClick={() => onOpenAddModal()}
-          className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-xs transition-colors w-full sm:w-auto min-h-[38px] shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-xs transition-colors w-full sm:w-auto min-h-[48px] shrink-0 active:scale-[0.99]"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>{language === 'fr' ? '+ Saisir des heures' : '+ Log Manual Punch'}</span>
@@ -297,7 +297,7 @@ export const TimesheetGrid: React.FC<TimesheetGridProps> = ({
                     <button
                       type="button"
                       onClick={() => onOpenAddModal(day.date)}
-                      className="p-1 sm:p-1.5 rounded-md text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                      className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg text-blue-700 bg-blue-50 hover:text-blue-800 hover:bg-blue-100 border border-blue-100 transition-colors"
                       title={`${t.addEntryBtn} ${day.formattedDate}`}
                     >
                       <Plus className="w-4 h-4" />
