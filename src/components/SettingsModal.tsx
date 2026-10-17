@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { PublicFile } from '../utils/publicFile';
 import { Share } from '@capacitor/share';
 import {
   X,
@@ -182,22 +182,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       const csvWithBom = '\uFEFF' + csvContent;
 
       if (Capacitor.isNativePlatform()) {
-        // Save CSV exports directly to the shared Documents/Timesheet folder.
+        // Save through Android MediaStore to the phone's shared Documents/Timesheet folder.
         const base64 = btoa(unescape(encodeURIComponent(csvWithBom)));
-        const savedPath = `Timesheet/${fileName}`;
-        await Filesystem.writeFile({
-          path: savedPath,
+        await PublicFile.saveFile({
+          fileName,
           data: base64,
-          directory: Directory.Documents,
-          recursive: true,
+          mimeType: 'text/csv',
         });
-        const savedInfo = await Filesystem.stat({
-          path: savedPath,
-          directory: Directory.Documents,
-        });
-        if (!savedInfo.size || savedInfo.size <= 0) {
-          throw new Error('The CSV file was created but appears to be empty.');
-        }
       } else {
         downloadAllDataCsv(JSON.stringify(exportPayload), formData.employeeName || profile.employeeName);
       }
