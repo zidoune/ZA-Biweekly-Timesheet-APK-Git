@@ -229,22 +229,22 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 2: Mobile Dedicated Pay Period Navigator Bar */}
         <div className="md:hidden pb-2.5 pt-0.5 border-t border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center gap-1.5">
-          <div className="inline-flex items-center justify-between w-full max-w-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-1">
+          <div className="inline-flex items-center justify-between w-full max-w-sm bg-blue-50 dark:bg-slate-800 border border-blue-200 dark:border-slate-700 rounded-xl p-1.5 shadow-xs">
             <button
               type="button"
               onClick={handlePrev}
               disabled={!hasPrev}
-              className="p-1.5 rounded-md text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-lg text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none transition-colors"
               title={t.previousPeriod}
               aria-label={t.previousPeriod}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
-            <div className="px-2 py-0.5 flex items-center gap-1.5 text-[11px] font-medium text-slate-800 dark:text-slate-200 text-center truncate">
-              <Calendar className="w-3 h-3 text-blue-600 dark:text-blue-400 shrink-0" />
-              <span className="font-semibold text-slate-900 dark:text-white">#{currentPeriod.periodNumber}:</span>
-              <span className="font-mono truncate">{currentPeriod.label}</span>
+            <div className="flex-1 min-w-0 px-2 py-1 flex items-center justify-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100 text-center">
+              <Calendar className="w-4 h-4 text-blue-700 dark:text-blue-400 shrink-0" />
+              <span className="font-bold text-blue-800 dark:text-blue-300 whitespace-nowrap">#{currentPeriod.periodNumber}</span>
+              <span className="font-mono whitespace-normal leading-tight">{currentPeriod.label}</span>
             </div>
 
             <button
