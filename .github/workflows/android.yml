@@ -62,15 +62,15 @@ jobs:
           manifest = Path("android/app/src/main/AndroidManifest.xml")
           content = manifest.read_text()
           permissions = [
-              '    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />',
-              '    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />',
+              ("android.permission.READ_EXTERNAL_STORAGE", '    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />'),
+              ("android.permission.WRITE_EXTERNAL_STORAGE", '    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />'),
           ]
-          missing = [p for p in permissions if p.split(' android:')[1].split('"')[0] not in content]
+          missing = [line for name, line in permissions if f'android:name="{name}"' not in content]
           if missing:
-              match = re.search(r'<manifest\\b[^>]*>', content)
+              match = re.search(r'<manifest\b[^>]*>', content)
               if not match:
                   raise SystemExit("Could not find the Android manifest root element.")
-              content = content[:match.end()] + "\\n" + "\\n".join(missing) + content[match.end():]
+              content = content[:match.end()] + "\n" + "\n".join(missing) + content[match.end():]
               manifest.write_text(content)
           print("Legacy storage permissions configured; modern Android uses scoped storage.")
           PY
