@@ -43,11 +43,11 @@ export function generateTimesheetPdf({
   const marginX = 14;
   let currentY = 16;
   const generatedAt = new Date();
-  // Migrate the legacy default custom signee name in generated PDFs without touching saved timesheets.
+  // Replace the legacy default signee name in generated PDFs while preserving any custom name.
   const resolvedCustomSignature = customSignature
     ? {
         ...customSignature,
-        name: customSignature.name?.trim() === 'Jacob Demontigny'
+        name: customSignature.name?.trim() === 'Mark Callahan'
           ? 'Jacob Demontigny'
           : customSignature.name,
       }
