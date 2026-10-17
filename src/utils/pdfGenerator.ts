@@ -42,6 +42,15 @@ export function generateTimesheetPdf({
   const pageHeight = 279.4;
   const marginX = 14;
   let currentY = 16;
+  const generatedAt = new Date();
+
+  // Add searchable document metadata without changing timesheet content.
+  doc.setProperties({
+    title: `Biweekly Timesheet Audit Report - ${profile.employeeName} - ${period.label}`,
+    subject: `Timesheet audit for ${period.startDate} to ${period.endDate}`,
+    author: 'Demontigny Carpentry',
+    creator: 'ZA Biweekly Timesheet',
+  });
 
   const projectMap = new Map<string, Project>();
   projects.forEach((p) => projectMap.set(p.id, p));
@@ -119,7 +128,11 @@ export function generateTimesheetPdf({
   };
 
   const drawPageHeader = (isContinuation: boolean = false) => {
-    // Top banner hairline
+    // Consistent branded top edge on the first page and all continuation pages.
+    doc.setFillColor(15, 23, 42); // deep navy
+    doc.rect(0, 0, pageWidth, 3, 'F');
+    doc.setFillColor(34, 211, 238); // cyan accent
+    doc.rect(0, 0, 42, 3, 'F');
     doc.setDrawColor(226, 232, 240); // slate-200
     doc.setLineWidth(0.3);
 
@@ -243,14 +256,16 @@ export function generateTimesheetPdf({
 
   // Draw table header row
   const drawTableHeader = () => {
-    doc.setFillColor(241, 245, 249); // slate-100
+    // High-contrast navy table header remains clear in color and grayscale print.
+    doc.setFillColor(15, 23, 42);
     doc.rect(marginX, currentY, pageWidth - marginX * 2, 7, 'F');
-    doc.setDrawColor(203, 213, 225);
+    doc.setDrawColor(34, 211, 238);
+    doc.setLineWidth(0.45);
     doc.line(marginX, currentY + 7, pageWidth - marginX, currentY + 7);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
-    doc.setTextColor(51, 65, 85);
+    doc.setTextColor(255, 255, 255);
 
     let colX = marginX;
     cols.forEach((col) => {
@@ -620,15 +635,34 @@ export function generateTimesheetPdf({
     currentY += boxH + 4;
   }
 
-  // Footer Audit Trail
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.5);
-  doc.setTextColor(148, 163, 184);
-  doc.text(
-    `Demontigny Carpentry . Timesheet Audit . Generated ${new Date().toLocaleString()} · Biweekly Period ${period.startDate} to ${period.endDate}`,
-    marginX,
-    pageHeight - 8
-  );
+  // Professional, consistent audit footer on every page with page numbering.
+  const pageCount = doc.getNumberOfPages();
+  const generatedLabel = generatedAt.toLocaleString();
+  for (let page = 1; page <= pageCount; page += 1) {
+    doc.setPage(page);
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.25);
+    doc.line(marginX, pageHeight - 13, pageWidth - marginX, pageHeight - 13);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6.2);
+    doc.setTextColor(71, 85, 105);
+    doc.text(
+      `Demontigny Carpentry · Timesheet Audit · ${period.startDate} to ${period.endDate}`,
+      marginX,
+      pageHeight - 8
+    );
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.2);
+    doc.setTextColor(100, 116, 139);
+    doc.text(
+      `Generated ${generatedLabel} · Page ${page} of ${pageCount}`,
+      pageWidth - marginX,
+      pageHeight - 8,
+      { align: 'right' }
+    );
+  }
 
   return doc;
 }
