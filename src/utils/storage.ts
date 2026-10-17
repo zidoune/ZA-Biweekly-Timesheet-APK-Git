@@ -380,7 +380,7 @@ export function loadProfile(): TimesheetProfile {
       employerName: parsed.employerName || INITIAL_PROFILE.employerName,
       employerPhone: parsed.employerPhone || INITIAL_PROFILE.employerPhone,
       supervisorName:
-        parsed.supervisorName === 'Mark Callahan, General Contractor'
+        parsed.supervisorName === 'Jacob Demontigny, General Contractor'
           ? 'Jacob Demontigny'
           : parsed.supervisorName || INITIAL_PROFILE.supervisorName,
       defaultBreakMinutes:
