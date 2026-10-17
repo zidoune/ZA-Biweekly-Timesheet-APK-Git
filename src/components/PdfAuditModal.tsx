@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { Filesystem, Directory } from '@capacitor/filesystem';
+import { PublicFile } from '../utils/publicFile';
 import { Share } from '@capacitor/share';
 import {
   X,
@@ -247,23 +247,12 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
           throw new Error('PDF generator returned an empty file.');
         }
 
-        // Save directly to the shared Documents/Timesheet folder. Capacitor
-        // creates the folder automatically because recursive is enabled.
-        const folderPath = `Timesheet/${fileName}`;
-        const savedFile = await Filesystem.writeFile({
-          path: folderPath,
+        // Save through Android MediaStore to the phone's shared Documents/Timesheet folder.
+        const savedFile = await PublicFile.saveFile({
+          fileName,
           data: pdfBase64,
-          directory: Directory.Documents,
-          recursive: true,
+          mimeType: 'application/pdf',
         });
-
-        const savedInfo = await Filesystem.stat({
-          path: folderPath,
-          directory: Directory.Documents,
-        });
-        if (!savedInfo.size || savedInfo.size <= 0) {
-          throw new Error('The PDF file was created but appears to be empty.');
-        }
 
         setPdfPreviewUrl(savedFile.uri);
         setDownloadSuccess(true);
