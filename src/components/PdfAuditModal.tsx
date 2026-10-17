@@ -250,7 +250,7 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
         }
         // Keep a durable app-private copy and a cache copy that Android's
         // FileProvider can share with PDF viewers, email, and messaging apps.
-        const persistentFile = await Filesystem.writeFile({
+        await Filesystem.writeFile({
           path: fileName,
           data: pdfBase64,
           directory: Directory.Data,
