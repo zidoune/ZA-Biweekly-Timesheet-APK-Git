@@ -132,109 +132,7 @@ export const INITIAL_MANAGED_EMPLOYEES: ManagedEmployee[] = [
   },
 ];
 
-export const INITIAL_ENTRIES: TimeEntry[] = [
-  {
-    id: 'entry-01',
-    projectId: 'prj-building-subfloor',
-    date: '2026-10-05',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'Subfloor joists layout & plywood decking',
-  },
-  {
-    id: 'entry-02',
-    projectId: 'prj-building-walls',
-    date: '2026-10-06',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'Load-bearing exterior wall framing & ties',
-  },
-  {
-    id: 'entry-03',
-    projectId: 'prj-building-walls',
-    date: '2026-10-07',
-    startTime: '08:00',
-    endTime: '17:30',
-    breakMinutes: 60,
-    netHours: 8.5,
-    isOvertime: true,
-    notes: 'Header installation & double top plates',
-  },
-  {
-    id: 'entry-04',
-    projectId: 'prj-building-roof',
-    date: '2026-10-08',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'Roof truss lifting & temporary diagonal bracing',
-  },
-  {
-    id: 'entry-05',
-    projectId: 'prj-custom-house',
-    date: '2026-10-09',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'First floor interior wall partitions',
-  },
-  {
-    id: 'entry-06',
-    projectId: 'prj-custom-house',
-    date: '2026-10-12',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'Window bucks & exterior door opening framing',
-  },
-  {
-    id: 'entry-07',
-    projectId: 'prj-custom-house',
-    date: '2026-10-13',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'Fire blocking, shear paneling & backing plates',
-  },
-  {
-    id: 'entry-08',
-    projectId: 'prj-custom-house',
-    date: '2026-10-14',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'Upper deck framing & ledger board flashing',
-  },
-  {
-    id: 'entry-09',
-    projectId: 'prj-building-roof',
-    date: '2026-10-15',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'Roof fascia & sub-fascia installation',
-  },
-  {
-    id: 'entry-10',
-    projectId: 'prj-custom-house',
-    date: '2026-10-16',
-    startTime: '08:00',
-    endTime: '17:00',
-    breakMinutes: 60,
-    netHours: 8.0,
-    notes: 'Framing punch-list verification & site cleanup',
-  },
-];
+export const INITIAL_ENTRIES: TimeEntry[] = [];
 
 export interface ActiveTimerState {
   projectId: string;
@@ -313,13 +211,11 @@ export function saveProjects(projects: Project[]): void {
 export function loadEntries(): TimeEntry[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.ENTRIES);
-    let list = INITIAL_ENTRIES;
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        list = parsed;
-      }
-    }
+    const parsed = raw ? JSON.parse(raw) : [];
+    const storedEntries: TimeEntry[] = Array.isArray(parsed) ? parsed : [];
+    // Remove only the app's known demo/sample rows (entry-01 through entry-10).
+    // Keep every user-created entry and all other saved data intact.
+    const list = storedEntries.filter((e) => !/^entry-(0[1-9]|10)$/.test(e.id));
     // Re-map any legacy entries assigned to removed projects & populate initial notes if missing
     return list.map((e) => {
       let updated = { ...e };
@@ -355,7 +251,7 @@ export function loadEntries(): TimeEntry[] {
       return updated;
     });
   } catch {
-    return INITIAL_ENTRIES;
+    return [];
   }
 }
 
