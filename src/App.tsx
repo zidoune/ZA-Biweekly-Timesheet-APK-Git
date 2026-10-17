@@ -400,12 +400,9 @@ export default function App() {
         periods={periods}
         currentPeriod={currentPeriod}
         onSelectPeriod={setCurrentPeriod}
-        profile={effectiveProfile}
-        totalPeriodHours={totalPeriodNetHours}
         onOpenPdfModal={() => setIsPdfModalOpen(true)}
         onOpenProjectsModal={() => setIsProjectsModalOpen(true)}
         onOpenSettingsModal={() => setIsSettingsModalOpen(true)}
-        onOpenApkModal={() => setIsApkModalOpen(true)}
       />
 
       {/* Main Content Area */}
