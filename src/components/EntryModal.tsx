@@ -28,7 +28,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
   const [date, setDate] = useState<string>('');
   const [startTime, setStartTime] = useState<string>('08:00');
   const [endTime, setEndTime] = useState<string>('17:00');
-  const [breakMinutes, setBreakMinutes] = useState<number>(defaultBreakMinutes || 60);
+  const [breakMinutes, setBreakMinutes] = useState<number>(defaultBreakMinutes ?? 30);
   const [isOvertime, setIsOvertime] = useState<boolean>(false);
   const [notes, setNotes] = useState<string>('');
 
