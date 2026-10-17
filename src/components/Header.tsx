@@ -6,7 +6,7 @@ import {
   Briefcase,
   Settings,
 } from 'lucide-react';
-import { BiweeklyPeriod, TimesheetProfile } from '../types/timesheet';
+import { BiweeklyPeriod } from '../types/timesheet';
 import { useLanguage } from '../context/LanguageContext';
 import { LanguageSelector } from './LanguageSelector';
 import { ThemeSwitcher } from './ThemeSwitcher';
@@ -15,24 +15,18 @@ interface HeaderProps {
   periods: BiweeklyPeriod[];
   currentPeriod: BiweeklyPeriod;
   onSelectPeriod: (period: BiweeklyPeriod) => void;
-  profile: TimesheetProfile;
-  totalPeriodHours?: number;
   onOpenPdfModal: () => void;
   onOpenProjectsModal: () => void;
   onOpenSettingsModal: () => void;
-  onOpenApkModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   periods,
   currentPeriod,
   onSelectPeriod,
-  profile,
-  totalPeriodHours = 0,
   onOpenPdfModal,
   onOpenProjectsModal,
   onOpenSettingsModal,
-  onOpenApkModal,
 }) => {
   const { t } = useLanguage();
   const currentIndex = periods.findIndex((p) => p.id === currentPeriod.id);
