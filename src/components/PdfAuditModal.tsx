@@ -237,8 +237,6 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
       const cleanEmployeeId = (profile.employeeId || 'No-ID').trim().replace(/[^a-zA-Z0-9_-]+/g, '_');
       const fileName = `Timesheet_${cleanEmployeeId}_Period_${period.startDate}_to_${period.endDate}.pdf`;
       if (Capacitor.isNativePlatform()) {
-        // Android's native Share plugin can reliably share files from the app cache.
-        // Public Documents storage is restricted on modern Android versions, so avoid it here.
         const dataUri = doc.output('datauristring');
         const commaIndex = dataUri.indexOf(',');
         if (commaIndex < 0) {
@@ -248,43 +246,27 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
         if (!pdfBase64) {
           throw new Error('PDF generator returned an empty file.');
         }
-        // Keep a durable app-private copy and a cache copy that Android's
-        // FileProvider can share with PDF viewers, email, and messaging apps.
-        await Filesystem.writeFile({
-          path: fileName,
-          data: pdfBase64,
-          directory: Directory.Data,
-          recursive: true,
-        });
+
+        // Save directly to the shared Documents/Timesheet folder. Capacitor
+        // creates the folder automatically because recursive is enabled.
+        const folderPath = `Timesheet/${fileName}`;
         const savedFile = await Filesystem.writeFile({
-          path: fileName,
+          path: folderPath,
           data: pdfBase64,
-          directory: Directory.Cache,
+          directory: Directory.Documents,
           recursive: true,
         });
 
-        // Verify that the files were actually written before reporting success.
-        const persistentInfo = await Filesystem.stat({
-          path: fileName,
-          directory: Directory.Data,
+        const savedInfo = await Filesystem.stat({
+          path: folderPath,
+          directory: Directory.Documents,
         });
-        if (!persistentInfo.size || persistentInfo.size <= 0) {
+        if (!savedInfo.size || savedInfo.size <= 0) {
           throw new Error('The PDF file was created but appears to be empty.');
         }
 
         setPdfPreviewUrl(savedFile.uri);
         setDownloadSuccess(true);
-        try {
-          await Share.share({
-            title: fileName,
-            text: `Timesheet PDF: ${fileName}. Choose a PDF viewer to open it, or an email/messaging app to send it. To keep an external copy, choose Save to Files or Drive if available.`,
-            url: savedFile.uri,
-            dialogTitle: 'Open or share timesheet PDF',
-          });
-        } catch (shareError) {
-          // The verified app-private copy remains saved even if the user dismisses sharing.
-          console.info('PDF saved; share sheet dismissed or unavailable.', shareError);
-        }
       } else {
         const previewUrl = doc.output('bloburl');
         setPdfPreviewUrl(previewUrl);
@@ -384,7 +366,7 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
           <div className="bg-emerald-50 dark:bg-emerald-950/60 border-b border-emerald-200 dark:border-emerald-800 px-6 py-2 text-xs text-emerald-800 dark:text-emerald-200 flex items-center justify-between gap-3 no-print animate-in fade-in">
             <span className="flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              PDF saved: {`Timesheet_${(profile.employeeId || 'No-ID').trim().replace(/[^a-zA-Z0-9_-]+/g, '_')}_Period_${period.startDate}_to_${period.endDate}.pdf`}. Android keeps a copy in app storage; choose Save to Files/Drive in the share menu for a permanent, easy-to-find copy.
+              PDF saved to Documents/Timesheet: {`Timesheet_${(profile.employeeId || 'No-ID').trim().replace(/[^a-zA-Z0-9_-]+/g, '_')}_Period_${period.startDate}_to_${period.endDate}.pdf`}
             </span>
             {pdfPreviewUrl && (
               <button
