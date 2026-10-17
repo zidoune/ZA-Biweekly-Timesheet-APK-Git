@@ -350,7 +350,7 @@ export function generateTimesheetPdf({
             ? `${proj.name} [${proj.code}]`
             : proj.name
           : 'General';
-        const clientName = proj ? proj.client : '—';
+        const clientName = 'Demontigny Carpentry';
 
         const rowHeight = 7.0;
 
