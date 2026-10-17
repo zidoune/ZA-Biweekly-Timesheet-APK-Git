@@ -309,7 +309,7 @@ export function generateTimesheetPdf({
 
     if (dayEntries.length === 0) {
       // Give each day row enough breathing room so the table is easier to read and the sign-off section sits lower on the page.
-      const emptyRowHeight = 8.5;
+      const emptyRowHeight = 7.5;
       checkPageBreak(emptyRowHeight);
 
       if (altRow) {
@@ -359,7 +359,7 @@ export function generateTimesheetPdf({
           : 'General';
         const clientName = 'Demontigny Carpentry';
 
-        const rowHeight = 8.5;
+        const rowHeight = 7.5;
 
         checkPageBreak(rowHeight);
 
@@ -660,9 +660,13 @@ export function generateTimesheetPdf({
   const generatedLabel = generatedAt.toLocaleString();
   for (let page = 1; page <= pageCount; page += 1) {
     doc.setPage(page);
+    // Keep the footer close to the sign-off on the final page to avoid an oversized blank area.
+    const footerY = page === pageCount
+      ? Math.min(pageHeight - 13, currentY + 4)
+      : pageHeight - 13;
     doc.setDrawColor(203, 213, 225);
     doc.setLineWidth(0.25);
-    doc.line(marginX, pageHeight - 13, pageWidth - marginX, pageHeight - 13);
+    doc.line(marginX, footerY, pageWidth - marginX, footerY);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(6.2);
@@ -670,7 +674,7 @@ export function generateTimesheetPdf({
     doc.text(
       `Demontigny Carpentry · Timesheet Audit · ${period.startDate} to ${period.endDate}`,
       marginX,
-      pageHeight - 8
+      footerY + 5
     );
 
     doc.setFont('helvetica', 'normal');
@@ -679,7 +683,7 @@ export function generateTimesheetPdf({
     doc.text(
       `Generated ${generatedLabel} · Page ${page} of ${pageCount}`,
       pageWidth - marginX,
-      pageHeight - 8,
+      footerY + 5,
       { align: 'right' }
     );
   }
