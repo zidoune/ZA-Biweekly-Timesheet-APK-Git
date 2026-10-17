@@ -261,7 +261,7 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
         doc.save(fileName);
         setDownloadSuccess(true);
       }
-      setTimeout(() => setDownloadSuccess(false), 8000);
+      // Keep the success banner and Open / Share button available until the user closes the modal or exports again.
     } catch (err) {
       console.error('Error generating or saving PDF:', err);
       const detail = err instanceof Error && err.message ? `\\n\\nDetails: ${err.message}` : '';
