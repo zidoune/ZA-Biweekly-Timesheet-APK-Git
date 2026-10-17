@@ -182,29 +182,30 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       const csvWithBom = '\uFEFF' + csvContent;
 
       if (Capacitor.isNativePlatform()) {
-        // Android WebView downloads from Blob URLs are unreliable; create a real
-        // cache file and use the native share sheet to save/share the CSV.
+        // Save CSV exports directly to the shared Documents/Timesheet folder.
         const base64 = btoa(unescape(encodeURIComponent(csvWithBom)));
-        const saved = await Filesystem.writeFile({
-          path: fileName,
+        const savedPath = `Timesheet/${fileName}`;
+        await Filesystem.writeFile({
+          path: savedPath,
           data: base64,
-          directory: Directory.Cache,
+          directory: Directory.Documents,
           recursive: true,
         });
-        await Share.share({
-          title: 'ZA Biweekly Timesheet CSV Export',
-          text: 'Export of timesheet entries, days off, projects, profile settings, and audit totals.',
-          url: saved.uri,
-          dialogTitle: 'Save or share CSV export',
+        const savedInfo = await Filesystem.stat({
+          path: savedPath,
+          directory: Directory.Documents,
         });
+        if (!savedInfo.size || savedInfo.size <= 0) {
+          throw new Error('The CSV file was created but appears to be empty.');
+        }
       } else {
         downloadAllDataCsv(JSON.stringify(exportPayload), formData.employeeName || profile.employeeName);
       }
 
       setImportStatus(
         language === 'fr'
-          ? 'Exportation CSV prête à enregistrer ou partager !'
-          : 'CSV export ready to save or share!'
+          ? 'CSV enregistré dans Documents/Timesheet.'
+          : 'CSV saved to Documents/Timesheet.'
       );
       setTimeout(() => setImportStatus(null), 3500);
     } catch (err) {
