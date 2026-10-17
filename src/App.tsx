@@ -618,7 +618,7 @@ export default function App() {
           period={currentPeriod}
           profile={effectiveProfile}
           projects={projects}
-          entries={entries}
+          entries={currentSubjectEntries}
           daysOff={daysOff}
         />
       )}
