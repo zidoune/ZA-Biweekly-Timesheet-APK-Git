@@ -332,22 +332,22 @@ export function generateTimesheetPdf({
         } else {
           doc.setTextColor(180, 83, 9); // amber-700
           doc.setFont('helvetica', 'bold');
-          doc.text(`[Day Off] ${dayOff.reason || 'Scheduled Day Off'}`, marginX + 28, currentY + 2.7);
+          doc.text(`[Day Off] ${dayOff.reason || 'Scheduled Day Off'}`, marginX + 28, currentY + 3);
         }
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(148, 163, 184);
       } else if (daySchedule.isWeekend) {
-        doc.text('Weekend — No punch recorded', marginX + 28, currentY + 2.7);
+        doc.text('Weekend — No punch recorded', marginX + 28, currentY + 3);
       } else {
-        doc.text('Off-duty / Scheduled off', marginX + 28, currentY + 2.7);
+        doc.text('Off-duty / Scheduled off', marginX + 28, currentY + 3);
       }
 
       doc.setTextColor(148, 163, 184); // slate-400 gray for 0.00
-      doc.text('0.00', pageWidth - marginX - 2, currentY + 2.7, { align: 'right' });
+      doc.text('0.00', pageWidth - marginX - 2, currentY + 3, { align: 'right' });
 
       doc.setDrawColor(241, 245, 249);
       doc.line(marginX, currentY + 4, pageWidth - marginX, currentY + 4);
-      currentY += 3.5;
+      currentY += 4;
     } else {
       dayEntries.forEach((entry) => {
         const proj = projectMap.get(entry.projectId);
