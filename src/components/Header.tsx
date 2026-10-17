@@ -5,7 +5,6 @@ import {
   FileDown,
   Briefcase,
   Settings,
-  TrendingUp,
 } from 'lucide-react';
 import { BiweeklyPeriod, TimesheetProfile } from '../types/timesheet';
 import { useLanguage } from '../context/LanguageContext';
@@ -36,9 +35,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenApkModal,
 }) => {
   const { t } = useLanguage();
-  const standard80Threshold = 80.0;
-  const isOvertime = totalPeriodHours > standard80Threshold;
-  const overtimeHours = Math.max(0, totalPeriodHours - standard80Threshold);
   const currentIndex = periods.findIndex((p) => p.id === currentPeriod.id);
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < periods.length - 1;
@@ -54,12 +50,12 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="app-safe-header bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-3">
+        <div className="flex flex-col items-stretch gap-2 py-2 lg:flex-row lg:items-center lg:justify-between lg:py-0 lg:min-h-16">
           {/* Brand icon and “Chronos” wordmark removed; keep header actions aligned. */}
           <div className="flex-1 min-w-0" aria-hidden="true" />
 
           {/* Zone 2: Pay Period Navigator & Period Selector (Desktop Center View) */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center justify-center gap-2 lg:justify-start">
             <div className="inline-flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1">
               <button
                 type="button"
@@ -90,59 +86,11 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
-            {/* Overtime Notification Badge (> 80h Threshold) */}
-            {isOvertime && (
-              <div
-                className="relative group/ot inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 border border-amber-300/90 text-amber-900 text-xs font-semibold shadow-2xs hover:bg-amber-100 transition-all cursor-help select-none"
-                role="status"
-                aria-label={`${t.headerOvertimeBadge}: ${totalPeriodHours.toFixed(1)}h logged (${overtimeHours.toFixed(1)}h over 80h threshold)`}
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                </span>
-                <TrendingUp className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span className="font-semibold whitespace-nowrap">{t.headerOvertimeBadge}</span>
-                <span className="bg-amber-200/90 text-amber-950 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-tight">
-                  +{overtimeHours.toFixed(1)}h OT
-                </span>
 
-                {/* Overtime Info Tooltip */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50 w-64 p-3 bg-slate-900/95 text-white rounded-xl shadow-2xl border border-slate-700/80 backdrop-blur-md opacity-0 group-hover/ot:opacity-100 group-hover/ot:scale-100 pointer-events-none group-hover/ot:pointer-events-auto transition-all duration-150 text-left">
-                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900 rotate-45 border-l border-t border-slate-700/80" />
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
-                    <span className="font-bold text-xs text-white flex items-center gap-1.5">
-                      <TrendingUp className="w-3.5 h-3.5 text-amber-400" />
-                      {t.headerOvertimeThresholdExceeded}
-                    </span>
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                      &gt; 80h Limit
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-300 leading-snug mb-2 font-sans">
-                    {t.headerOvertimeNotice}
-                  </p>
-                  <div className="space-y-1 font-mono text-[11px] bg-slate-800/80 p-2 rounded-lg border border-slate-700/60">
-                    <div className="flex justify-between text-slate-300">
-                      <span className="text-slate-400 font-sans">Logged:</span>
-                      <span className="font-bold text-white">{totalPeriodHours.toFixed(2)}h</span>
-                    </div>
-                    <div className="flex justify-between text-slate-300">
-                      <span className="text-slate-400 font-sans">Threshold:</span>
-                      <span>80.00h</span>
-                    </div>
-                    <div className="flex justify-between text-amber-300 pt-1 border-t border-slate-700">
-                      <span className="text-amber-300 font-sans font-semibold">Overtime:</span>
-                      <span className="font-bold">+{overtimeHours.toFixed(2)}h</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Zone 3: Actions (Projects, Settings, Export PDF, Theme, and Language Selector) */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 shrink-0 lg:justify-end">
             <button
               type="button"
               onClick={onOpenProjectsModal}
@@ -151,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label={t.projectsBtn}
             >
               <Briefcase className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-              <span className="hidden lg:inline">{t.projectsBtn}</span>
+              <span className="hidden md:inline">{t.projectsBtn}</span>
             </button>
 
             <button
@@ -162,7 +110,7 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label={t.settingsBtn}
             >
               <Settings className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-              <span className="hidden lg:inline">{profile.employeeName.split(' ')[0] || t.settingsBtn}</span>
+              <span className="hidden md:inline">{t.settingsBtn}</span>
             </button>
 
             <button
@@ -219,25 +167,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-          {/* Mobile Overtime Visual Indicator Banner */}
-          {isOvertime && (
-            <div className="flex items-center justify-between w-full max-w-sm px-2.5 py-1 bg-amber-50 dark:bg-amber-950/60 border border-amber-300/90 dark:border-amber-700 rounded-lg text-[11px] font-medium text-amber-900 dark:text-amber-200 shadow-2xs">
-              <div className="flex items-center gap-1.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                </span>
-                <TrendingUp className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                <span className="font-semibold">{t.headerOvertimeBadge}</span>
-              </div>
-              <div className="flex items-center gap-1 font-mono">
-                <span className="text-slate-800 dark:text-slate-200 font-bold">{totalPeriodHours.toFixed(1)}h</span>
-                <span className="bg-amber-200 dark:bg-amber-800 text-amber-950 dark:text-amber-100 px-1.5 py-0.2 rounded text-[10px] font-bold">
-                  +{overtimeHours.toFixed(1)}h &gt; 80h
-                </span>
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
     </header>
