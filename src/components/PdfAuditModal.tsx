@@ -248,23 +248,41 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
         if (!pdfBase64) {
           throw new Error('PDF generator returned an empty file.');
         }
+        // Keep a durable app-private copy and a cache copy that Android's
+        // FileProvider can share with PDF viewers, email, and messaging apps.
+        const persistentFile = await Filesystem.writeFile({
+          path: fileName,
+          data: pdfBase64,
+          directory: Directory.Data,
+          recursive: true,
+        });
         const savedFile = await Filesystem.writeFile({
           path: fileName,
           data: pdfBase64,
           directory: Directory.Cache,
           recursive: true,
         });
+
+        // Verify that the files were actually written before reporting success.
+        const persistentInfo = await Filesystem.stat({
+          path: fileName,
+          directory: Directory.Data,
+        });
+        if (!persistentInfo.size || persistentInfo.size <= 0) {
+          throw new Error('The PDF file was created but appears to be empty.');
+        }
+
         setPdfPreviewUrl(savedFile.uri);
         setDownloadSuccess(true);
         try {
           await Share.share({
-            title: 'Timesheet PDF',
-            text: 'Your timesheet PDF has been saved. Choose an app to open or share it.',
+            title: fileName,
+            text: `Timesheet PDF: ${fileName}. Choose a PDF viewer to open it, or an email/messaging app to send it. To keep an external copy, choose Save to Files or Drive if available.`,
             url: savedFile.uri,
             dialogTitle: 'Open or share timesheet PDF',
           });
         } catch (shareError) {
-          // The PDF is already saved even if the user dismisses the share sheet.
+          // The verified app-private copy remains saved even if the user dismisses sharing.
           console.info('PDF saved; share sheet dismissed or unavailable.', shareError);
         }
       } else {
@@ -366,7 +384,7 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
           <div className="bg-emerald-50 dark:bg-emerald-950/60 border-b border-emerald-200 dark:border-emerald-800 px-6 py-2 text-xs text-emerald-800 dark:text-emerald-200 flex items-center justify-between gap-3 no-print animate-in fade-in">
             <span className="flex items-center gap-1.5 font-medium">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              PDF generated. If you don’t see it, check your device’s Downloads folder.
+              PDF saved: {`Timesheet_${(profile.employeeId || 'No-ID').trim().replace(/[^a-zA-Z0-9_-]+/g, '_')}_Period_${period.startDate}_to_${period.endDate}.pdf`}. Android keeps a copy in app storage; choose Save to Files/Drive in the share menu for a permanent, easy-to-find copy.
             </span>
             {pdfPreviewUrl && (
               <button
@@ -381,7 +399,7 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
                 className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700 px-3 py-1.5 font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/60"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
-                Open PDF
+                Open / Share PDF
               </button>
             )}
           </div>
