@@ -41,7 +41,7 @@ export const ProjectManagerModal: React.FC<ProjectManagerModalProps> = ({
   const [code, setCode] = useState('');
   const [tagColor, setTagColor] = useState(COLOR_PRESETS[0].hex);
   const [billable, setBillable] = useState(true);
-  const [rate, setRate] = useState(profile.defaultHourlyRate ?? 95);
+  const [rate, setRate] = useState(profile.defaultHourlyRate ?? 30);
 
   // Client name change state
   const [isEditingClientBanner, setIsEditingClientBanner] = useState(false);
@@ -66,7 +66,7 @@ export const ProjectManagerModal: React.FC<ProjectManagerModalProps> = ({
     setCode('');
     setTagColor(COLOR_PRESETS[0].hex);
     setBillable(true);
-    setRate(profile.defaultHourlyRate ?? 95);
+    setRate(profile.defaultHourlyRate ?? 30);
   };
 
   const handleStartEdit = (p: Project) => {
@@ -368,7 +368,7 @@ export const ProjectManagerModal: React.FC<ProjectManagerModalProps> = ({
                     if (val > 0 && !billable) setBillable(true);
                   }}
                   className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500 font-semibold"
-                  placeholder="e.g. 95"
+                  placeholder="e.g. 30"
                 />
               </div>
             </div>
