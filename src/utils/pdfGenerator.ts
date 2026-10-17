@@ -116,6 +116,7 @@ export function generateTimesheetPdf({
 
   // Gross Pay: strictly Total Net Hours multiplied by Base Hourly Rate
   const grossPay = totalNetHours * baseRate;
+  const estimatedNetPay = grossPay * 0.812;
   const totalPayment = grossPay;
 
   // Helper function to check and add new page
@@ -175,9 +176,9 @@ export function generateTimesheetPdf({
 
     // Left info box (Employee details)
     doc.setFillColor(248, 250, 252); // slate-50
-    doc.roundedRect(marginX, currentY, colWidth, 27, 1.5, 1.5, 'F');
+    doc.roundedRect(marginX, currentY, colWidth, 32, 1.5, 1.5, 'F');
     doc.setDrawColor(226, 232, 240);
-    doc.roundedRect(marginX, currentY, colWidth, 27, 1.5, 1.5, 'D');
+    doc.roundedRect(marginX, currentY, colWidth, 32, 1.5, 1.5, 'D');
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
@@ -202,8 +203,8 @@ export function generateTimesheetPdf({
     // Right info box (Employer & Period Totals)
     const rightColX = marginX + colWidth + 8;
     doc.setFillColor(248, 250, 252);
-    doc.roundedRect(rightColX, currentY, colWidth, 27, 1.5, 1.5, 'F');
-    doc.roundedRect(rightColX, currentY, colWidth, 27, 1.5, 1.5, 'D');
+    doc.roundedRect(rightColX, currentY, colWidth, 32, 1.5, 1.5, 'F');
+    doc.roundedRect(rightColX, currentY, colWidth, 32, 1.5, 1.5, 'D');
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(8);
@@ -223,14 +224,26 @@ export function generateTimesheetPdf({
     doc.setTextColor(5, 150, 105); // emerald-600
     const summaryPaymentText = `Gross Pay: ${profile.currencySymbol || '$'}${grossPay.toFixed(2)}  (${totalNetHours.toFixed(2)}h @ ${profile.currencySymbol || '$'}${baseRate}/h)`;
     doc.text(summaryPaymentText, rightColX + 3.5, currentY + 19);
+    // Show the requested estimated take-home amount directly in the audit summary.
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(8, 145, 178); // cyan-600
+    doc.text(
+      `ESTIMATE NET PAY: ${profile.currencySymbol || '$'}${estimatedNetPay.toFixed(2)} (18.8% deduction)`,
+      rightColX + 3.5,
+      currentY + 24
+    );
+
     doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(71, 85, 105);
     if (periodDaysOffCount > 0) {
-      doc.text(`Base Rate: ${profile.currencySymbol || '$'}${baseRate}/h · Breaks: ${Math.floor(totalBreakMinutes / 60)}h ${Math.round(totalBreakMinutes % 60)}m · Days Off: ${periodDaysOffCount}`, rightColX + 3.5, currentY + 24);
+      doc.text(`Base Rate: ${profile.currencySymbol || '$'}${baseRate}/h · Breaks: ${Math.floor(totalBreakMinutes / 60)}h ${Math.round(totalBreakMinutes % 60)}m · Days Off: ${periodDaysOffCount}`, rightColX + 3.5, currentY + 29);
     } else {
-      doc.text(`Base Rate: ${profile.currencySymbol || '$'}${baseRate}/h · Unpaid Breaks: ${Math.floor(totalBreakMinutes / 60)}h ${Math.round(totalBreakMinutes % 60)}m`, rightColX + 3.5, currentY + 24);
+      doc.text(`Base Rate: ${profile.currencySymbol || '$'}${baseRate}/h · Unpaid Breaks: ${Math.floor(totalBreakMinutes / 60)}h ${Math.round(totalBreakMinutes % 60)}m`, rightColX + 3.5, currentY + 29);
     }
 
-    currentY += 33;
+    currentY += 38;
   };
 
   // 1. Initial Page Header
