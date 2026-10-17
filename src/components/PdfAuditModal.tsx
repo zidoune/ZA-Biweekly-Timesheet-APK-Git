@@ -237,13 +237,21 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
       const cleanEmployee = profile.employeeName.replace(/\s+/g, '_');
       const fileName = `Timesheet_Audit_${cleanEmployee}_Period_${period.startDate}_to_${period.endDate}.pdf`;
       if (Capacitor.isNativePlatform()) {
-        // Android WebView does not reliably save jsPDF blob downloads.
-        // Write the PDF to the app's Documents folder and open the native share/open sheet.
-        const pdfBase64 = doc.output('datauristring').split(',')[1];
+        // Android's native Share plugin can reliably share files from the app cache.
+        // Public Documents storage is restricted on modern Android versions, so avoid it here.
+        const dataUri = doc.output('datauristring');
+        const commaIndex = dataUri.indexOf(',');
+        if (commaIndex < 0) {
+          throw new Error('PDF generator returned invalid data.');
+        }
+        const pdfBase64 = dataUri.slice(commaIndex + 1);
+        if (!pdfBase64) {
+          throw new Error('PDF generator returned an empty file.');
+        }
         const savedFile = await Filesystem.writeFile({
           path: fileName,
           data: pdfBase64,
-          directory: Directory.Documents,
+          directory: Directory.Cache,
           recursive: true,
         });
         setPdfPreviewUrl(savedFile.uri);
@@ -267,8 +275,9 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
       }
       setTimeout(() => setDownloadSuccess(false), 8000);
     } catch (err) {
-      console.error('Error generating PDF:', err);
-      alert('Could not generate PDF. Please try printing directly.');
+      console.error('Error generating or saving PDF:', err);
+      const detail = err instanceof Error && err.message ? `\\n\\nDetails: ${err.message}` : '';
+      alert(`Could not generate or save the PDF. Please try printing directly.${detail}`);
     } finally {
       setIsExporting(false);
     }
