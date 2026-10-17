@@ -15,7 +15,6 @@ import { SettingsModal } from './components/SettingsModal';
 import { PdfAuditModal } from './components/PdfAuditModal';
 import { SheetPersonnelHeader } from './components/SheetPersonnelHeader';
 import { DayOffModal } from './components/DayOffModal';
-import { ApkExportModal } from './components/ApkExportModal';
 import { DailyHoursChart } from './components/DailyHoursChart';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { EnterForAnotherEmployeeModal } from './components/EnterForAnotherEmployeeModal';
@@ -121,7 +120,6 @@ export default function App() {
 
   // 3. Modals state
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
-  const [isApkModalOpen, setIsApkModalOpen] = useState(false);
   const [isProjectsModalOpen, setIsProjectsModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isEnterForAnotherOpen, setIsEnterForAnotherOpen] = useState(false);
@@ -625,10 +623,6 @@ export default function App() {
         />
       )}
 
-      <ApkExportModal
-        isOpen={isApkModalOpen}
-        onClose={() => setIsApkModalOpen(false)}
-      />
 
       <OfflineIndicator />
     </div>
