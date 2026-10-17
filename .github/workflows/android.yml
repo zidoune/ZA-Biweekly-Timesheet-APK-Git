@@ -52,6 +52,29 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Add legacy storage permissions for older Android versions
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          content = manifest.read_text()
+          permissions = [
+              '    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />',
+              '    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />',
+          ]
+          missing = [p for p in permissions if p.split(' android:')[1].split('"')[0] not in content]
+          if missing:
+              match = re.search(r'<manifest\\b[^>]*>', content)
+              if not match:
+                  raise SystemExit("Could not find the Android manifest root element.")
+              content = content[:match.end()] + "\\n" + "\\n".join(missing) + content[match.end():]
+              manifest.write_text(content)
+          print("Legacy storage permissions configured; modern Android uses scoped storage.")
+          PY
+
       - name: Build debug and release APKs
         working-directory: android
         run: |
