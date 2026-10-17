@@ -42,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="app-safe-header bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <header data-header-layout="tablet-v2" className="app-safe-header bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex flex-col items-stretch gap-2 py-2 lg:flex-row lg:items-center lg:justify-between lg:py-0 lg:min-h-16">
           {/* Zone 2: Pay Period Navigator & Period Selector (Desktop Center View) */}
@@ -90,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label={t.projectsBtn}
             >
               <Briefcase className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-              <span className="hidden md:inline">{t.projectsBtn}</span>
+              <span className="hidden sm:inline">{t.projectsBtn}</span>
             </button>
 
             <button
@@ -101,7 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label={t.settingsBtn}
             >
               <Settings className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-              <span className="hidden md:inline">{t.settingsBtn}</span>
+              <span className="hidden sm:inline">{t.settingsBtn}</span>
             </button>
 
             <button
