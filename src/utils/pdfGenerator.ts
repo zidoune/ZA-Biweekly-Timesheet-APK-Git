@@ -313,7 +313,7 @@ export function generateTimesheetPdf({
 
     if (dayEntries.length === 0) {
       // Show empty day row (especially for weekends or off-days)
-      checkPageBreak(6);
+      checkPageBreak(5);
 
       if (altRow) {
         doc.setFillColor(250, 250, 250);
@@ -350,8 +350,8 @@ export function generateTimesheetPdf({
       doc.text('0.00', pageWidth - marginX - 2, currentY + 4, { align: 'right' });
 
       doc.setDrawColor(241, 245, 249);
-      doc.line(marginX, currentY + 5.5, pageWidth - marginX, currentY + 5.5);
-      currentY += 5.5;
+      doc.line(marginX, currentY + 5.5, pageWidth - marginX, currentY + 4.5);
+      currentY += 4.5;
     } else {
       dayEntries.forEach((entry) => {
         const proj = projectMap.get(entry.projectId);
@@ -362,9 +362,9 @@ export function generateTimesheetPdf({
           : 'General';
         const clientName = 'Demontigny Carpentry';
 
-        const rowHeight = 7.0;
+        const rowHeight = 5.5;
 
-        checkPageBreak(rowHeight + 1);
+        checkPageBreak(rowHeight);
 
         if (altRow) {
           doc.setFillColor(248, 250, 252);
