@@ -379,20 +379,20 @@ export function generateTimesheetPdf({
 
         // Project column truncated if needed
         const projTrunc = projName.length > 32 ? projName.substring(0, 30) + '...' : projName;
-        doc.text(projTrunc, marginX + 28, currentY + 3.2);
+        doc.text(projTrunc, marginX + 28, currentY + 4.3);
 
         // Client column
         doc.setTextColor(71, 85, 105);
         const clientTrunc = clientName.length > 22 ? clientName.substring(0, 20) + '...' : clientName;
-        doc.text(clientTrunc, marginX + 26 + 54 + 2, currentY + 3.2);
+        doc.text(clientTrunc, marginX + 26 + 54 + 2, currentY + 4.3);
 
         // Punch Times
         doc.setFont('courier', 'normal');
         doc.setFontSize(7.5);
         doc.setTextColor(30, 41, 59);
         const inColX = marginX + 26 + 54 + 37.9;
-        doc.text(formatTime12h(entry.startTime), inColX + 9, currentY + 3.2, { align: 'center' });
-        doc.text(formatTime12h(entry.endTime), inColX + 18 + 9, currentY + 3.2, { align: 'center' });
+        doc.text(formatTime12h(entry.startTime), inColX + 9, currentY + 4.3, { align: 'center' });
+        doc.text(formatTime12h(entry.endTime), inColX + 18 + 9, currentY + 4.3, { align: 'center' });
 
         doc.setFont('helvetica', 'normal');
         const effBreak = getEffectiveBreakMinutes(entry);
@@ -401,7 +401,7 @@ export function generateTimesheetPdf({
         doc.text(
           breakText,
           inColX + 36 + 9,
-          currentY + 3.2,
+          currentY + 4.3,
           { align: 'center' }
         );
 
@@ -417,7 +417,7 @@ export function generateTimesheetPdf({
         doc.text(
           `${displayNet}`,
           pageWidth - marginX - 2,
-          currentY + 3.2,
+          currentY + 4.3,
           { align: 'right' }
         );
 
