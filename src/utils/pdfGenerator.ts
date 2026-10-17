@@ -49,7 +49,7 @@ export function generateTimesheetPdf({
         ...customSignature,
         name: customSignature.name?.trim() === 'Mark Callahan'
           ? 'Jacob Demontigny'
-          : resolvedCustomSignature.name,
+          : customSignature.name,
       }
     : undefined;
 
@@ -197,17 +197,18 @@ export function generateTimesheetPdf({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
     doc.setTextColor(15, 23, 42);
-    doc.text(`Employee Name: ${profile.employeeName}${profile.employeeId ? ` (ID: ${profile.employeeId})` : ''}`, marginX + 3.5, currentY + 9.5);
+    doc.text(`Employee Name: ${profile.employeeName}`, marginX + 3.5, currentY + 9.5);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(71, 85, 105);
-    doc.text(`Employee Email: ${profile.employeeEmail || '—'}`, marginX + 3.5, currentY + 14.5);
-    doc.text(`${profile.title} · ${profile.employeePhone || '—'}`, marginX + 3.5, currentY + 19);
+    doc.text(`Employee ID: ${profile.employeeId || '—'}`, marginX + 3.5, currentY + 13.5);
+    doc.text(`Employee Email: ${profile.employeeEmail || '—'}`, marginX + 3.5, currentY + 17.5);
+    doc.text(`${profile.title} · ${profile.employeePhone || '—'}`, marginX + 3.5, currentY + 21.5);
 
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(5, 150, 105); // emerald-600
-    doc.text(`Hourly Rate: ${profile.currencySymbol}${profile.defaultHourlyRate ?? 30}/hr`, marginX + 3.5, currentY + 24);
+    doc.text(`Hourly Rate: ${profile.currencySymbol}${profile.defaultHourlyRate ?? 30}/hr`, marginX + 3.5, currentY + 26.5);
 
     // Right info box (Employer & Period Totals)
     const rightColX = marginX + colWidth + 8;
