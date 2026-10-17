@@ -41,7 +41,7 @@ export function generateTimesheetPdf({
   const pageWidth = 215.9;
   const pageHeight = 279.4;
   const marginX = 14;
-  let currentY = 16;
+  let currentY = 10;
   const generatedAt = new Date();
   // Replace the legacy default signee name in generated PDFs while preserving any custom name.
   const resolvedCustomSignature = customSignature
@@ -130,7 +130,7 @@ export function generateTimesheetPdf({
 
   // Helper function to check and add new page
   const checkPageBreak = (neededHeight: number) => {
-    if (currentY + neededHeight > pageHeight - 16) {
+    if (currentY + neededHeight > pageHeight - 14) {
       doc.addPage();
       currentY = 16;
       drawPageHeader(true);
@@ -138,11 +138,7 @@ export function generateTimesheetPdf({
   };
 
   const drawPageHeader = (isContinuation: boolean = false) => {
-    // Consistent branded top edge on the first page and all continuation pages.
-    doc.setFillColor(15, 23, 42); // deep navy
-    doc.rect(0, 0, pageWidth, 3, 'F');
-    doc.setFillColor(34, 211, 238); // cyan accent
-    doc.rect(0, 0, 42, 3, 'F');
+    // Keep the report compact for tablet exports; omit the decorative blue top bar.
     doc.setDrawColor(226, 232, 240); // slate-200
     doc.setLineWidth(0.3);
 
@@ -253,7 +249,7 @@ export function generateTimesheetPdf({
       doc.text(`Base Rate: ${profile.currencySymbol || '$'}${baseRate}/h · Unpaid Breaks: ${Math.floor(totalBreakMinutes / 60)}h ${Math.round(totalBreakMinutes % 60)}m`, rightColX + 3.5, currentY + 29);
     }
 
-    currentY += 38;
+    currentY += 34;
   };
 
   // 1. Initial Page Header
@@ -264,7 +260,7 @@ export function generateTimesheetPdf({
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
   doc.text('1. DAILY TIME PUNCH AUDIT LOG (14-DAY SCHEDULE)', marginX, currentY);
-  currentY += 5;
+  currentY += 3.5;
 
   // Table Column Definitions (Total usable width: 187.9mm)
   const cols = [
@@ -281,10 +277,10 @@ export function generateTimesheetPdf({
   const drawTableHeader = () => {
     // High-contrast navy table header remains clear in color and grayscale print.
     doc.setFillColor(15, 23, 42);
-    doc.rect(marginX, currentY, pageWidth - marginX * 2, 7, 'F');
+    doc.rect(marginX, currentY, pageWidth - marginX * 2, 6, 'F');
     doc.setDrawColor(34, 211, 238);
     doc.setLineWidth(0.45);
-    doc.line(marginX, currentY + 7, pageWidth - marginX, currentY + 7);
+    doc.line(marginX, currentY + 6, pageWidth - marginX, currentY + 6);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
@@ -298,10 +294,10 @@ export function generateTimesheetPdf({
           : col.align === 'right'
           ? colX + col.width - 2
           : colX + 2;
-      doc.text(col.header, textX, currentY + 4.8, { align: col.align as any });
+      doc.text(col.header, textX, currentY + 4.2, { align: col.align as any });
       colX += col.width;
     });
-    currentY += 7;
+    currentY += 6;
   };
 
   drawTableHeader();
@@ -313,18 +309,18 @@ export function generateTimesheetPdf({
 
     if (dayEntries.length === 0) {
       // Show empty day row (especially for weekends or off-days)
-      checkPageBreak(5);
+      checkPageBreak(4);
 
       if (altRow) {
         doc.setFillColor(250, 250, 250);
-        doc.rect(marginX, currentY, pageWidth - marginX * 2, 5.5, 'F');
+        doc.rect(marginX, currentY, pageWidth - marginX * 2, 4.2, 'F');
       }
       altRow = !altRow;
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
       doc.setTextColor(148, 163, 184); // slate-400
-      doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 4);
+      doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 3.2);
 
       const dayOff = dayOffMap.get(daySchedule.date);
       if (dayOff) {
@@ -332,26 +328,26 @@ export function generateTimesheetPdf({
         if (isDidNotWork) {
           doc.setTextColor(225, 29, 72); // rose-600
           doc.setFont('helvetica', 'bold');
-          doc.text(`[Didn't Work] ${dayOff.notes || dayOff.reason || "Didn't work"}`, marginX + 28, currentY + 4);
+          doc.text(`[Didn't Work] ${dayOff.notes || dayOff.reason || "Didn't work"}`, marginX + 28, currentY + 3.2);
         } else {
           doc.setTextColor(180, 83, 9); // amber-700
           doc.setFont('helvetica', 'bold');
-          doc.text(`[Day Off] ${dayOff.reason || 'Scheduled Day Off'}`, marginX + 28, currentY + 4);
+          doc.text(`[Day Off] ${dayOff.reason || 'Scheduled Day Off'}`, marginX + 28, currentY + 3.2);
         }
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(148, 163, 184);
       } else if (daySchedule.isWeekend) {
-        doc.text('Weekend — No punch recorded', marginX + 28, currentY + 4);
+        doc.text('Weekend — No punch recorded', marginX + 28, currentY + 3.2);
       } else {
-        doc.text('Off-duty / Scheduled off', marginX + 28, currentY + 4);
+        doc.text('Off-duty / Scheduled off', marginX + 28, currentY + 3.2);
       }
 
       doc.setTextColor(148, 163, 184); // slate-400 gray for 0.00
-      doc.text('0.00', pageWidth - marginX - 2, currentY + 4, { align: 'right' });
+      doc.text('0.00', pageWidth - marginX - 2, currentY + 3.2, { align: 'right' });
 
       doc.setDrawColor(241, 245, 249);
-      doc.line(marginX, currentY + 5.5, pageWidth - marginX, currentY + 4.5);
-      currentY += 4.5;
+      doc.line(marginX, currentY + 4.2, pageWidth - marginX, currentY + 4.2);
+      currentY += 4.2;
     } else {
       dayEntries.forEach((entry) => {
         const proj = projectMap.get(entry.projectId);
@@ -362,7 +358,7 @@ export function generateTimesheetPdf({
           : 'General';
         const clientName = 'Demontigny Carpentry';
 
-        const rowHeight = 5.5;
+        const rowHeight = 4.4;
 
         checkPageBreak(rowHeight);
 
@@ -375,7 +371,7 @@ export function generateTimesheetPdf({
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7.5);
         doc.setTextColor(15, 23, 42);
-        doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 4.5);
+        doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 3.5);
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(7.5);
@@ -383,20 +379,20 @@ export function generateTimesheetPdf({
 
         // Project column truncated if needed
         const projTrunc = projName.length > 32 ? projName.substring(0, 30) + '...' : projName;
-        doc.text(projTrunc, marginX + 28, currentY + 4.5);
+        doc.text(projTrunc, marginX + 28, currentY + 3.5);
 
         // Client column
         doc.setTextColor(71, 85, 105);
         const clientTrunc = clientName.length > 22 ? clientName.substring(0, 20) + '...' : clientName;
-        doc.text(clientTrunc, marginX + 26 + 54 + 2, currentY + 4.5);
+        doc.text(clientTrunc, marginX + 26 + 54 + 2, currentY + 3.5);
 
         // Punch Times
         doc.setFont('courier', 'normal');
         doc.setFontSize(7.5);
         doc.setTextColor(30, 41, 59);
         const inColX = marginX + 26 + 54 + 37.9;
-        doc.text(formatTime12h(entry.startTime), inColX + 9, currentY + 4.5, { align: 'center' });
-        doc.text(formatTime12h(entry.endTime), inColX + 18 + 9, currentY + 4.5, { align: 'center' });
+        doc.text(formatTime12h(entry.startTime), inColX + 9, currentY + 3.5, { align: 'center' });
+        doc.text(formatTime12h(entry.endTime), inColX + 18 + 9, currentY + 3.5, { align: 'center' });
 
         doc.setFont('helvetica', 'normal');
         const effBreak = getEffectiveBreakMinutes(entry);
@@ -405,7 +401,7 @@ export function generateTimesheetPdf({
         doc.text(
           breakText,
           inColX + 36 + 9,
-          currentY + 4.5,
+          currentY + 3.5,
           { align: 'center' }
         );
 
@@ -421,7 +417,7 @@ export function generateTimesheetPdf({
         doc.text(
           `${displayNet}`,
           pageWidth - marginX - 2,
-          currentY + 4.5,
+          currentY + 3.5,
           { align: 'right' }
         );
 
@@ -452,17 +448,17 @@ export function generateTimesheetPdf({
     currentY + 5,
     { align: 'right' }
   );
-  currentY += 19; // Space above Section 2
+  currentY += 10; // Compact space above Section 2
 
   // 3. Verification & Formal Sign-off Section
   const isCustomSigActive = Boolean(resolvedCustomSignature && resolvedCustomSignature.enabled);
-  checkPageBreak(isCustomSigActive ? 48 : 42);
+  checkPageBreak(isCustomSigActive ? 38 : 34);
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(15, 23, 42);
   doc.text('2. COMPLIANCE & SIGN-OFF VERIFICATION', marginX, currentY);
-  currentY += 5;
+  currentY += 3.5;
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.5);
@@ -472,7 +468,7 @@ export function generateTimesheetPdf({
     marginX,
     currentY
   );
-  currentY += 7;
+  currentY += 5;
 
   if (isCustomSigActive && resolvedCustomSignature) {
     // 3 signature columns: Employee, Supervisor, and Custom (Client, GC, Inspector)
