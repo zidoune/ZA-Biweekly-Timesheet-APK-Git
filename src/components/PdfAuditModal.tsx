@@ -64,7 +64,7 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
   const [customSignatureEnabled, setCustomSignatureEnabled] = useState<boolean>(false);
   const [customSigPreset, setCustomSigPreset] = useState<string>('client');
   const [customSigTitle, setCustomSigTitle] = useState<string>('Client / General Contractor Acceptance');
-  const [customSigName, setCustomSigName] = useState<string>('Mark Callahan');
+  const [customSigName, setCustomSigName] = useState<string>('Jacob Demontigny');
   const [customSigStatement, setCustomSigStatement] = useState<string>(
     'Work inspected, punch intervals verified, and approved in full compliance with project specifications.'
   );
