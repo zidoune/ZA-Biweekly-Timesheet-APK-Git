@@ -234,8 +234,8 @@ export const PdfAuditModal: React.FC<PdfAuditModalProps> = ({
         customSignature: customSigConfig,
       });
 
-      const cleanEmployee = profile.employeeName.replace(/\s+/g, '_');
-      const fileName = `Timesheet_Audit_${cleanEmployee}_Period_${period.startDate}_to_${period.endDate}.pdf`;
+      const cleanEmployeeId = (profile.employeeId || 'No-ID').trim().replace(/[^a-zA-Z0-9_-]+/g, '_');
+      const fileName = `Timesheet_${cleanEmployeeId}_Period_${period.startDate}_to_${period.endDate}.pdf`;
       if (Capacitor.isNativePlatform()) {
         // Android's native Share plugin can reliably share files from the app cache.
         // Public Documents storage is restricted on modern Android versions, so avoid it here.
