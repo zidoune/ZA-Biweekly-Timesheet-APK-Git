@@ -6,7 +6,6 @@ import {
   Briefcase,
   Settings,
   TrendingUp,
-  Smartphone,
 } from 'lucide-react';
 import { BiweeklyPeriod, TimesheetProfile } from '../types/timesheet';
 import { useLanguage } from '../context/LanguageContext';
@@ -175,18 +174,6 @@ export const Header: React.FC<HeaderProps> = ({
               <FileDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden sm:inline">{t.exportPdfBtn}</span>
               <span className="sm:hidden text-[11px]">PDF</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenApkModal}
-              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-950 dark:hover:text-white rounded-lg shadow-2xs transition-colors shrink-0"
-              title={t.mobileAppBtn}
-              aria-label={t.mobileAppBtn}
-            >
-              <Smartphone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400" />
-              <span className="hidden sm:inline">{t.mobileAppBtn}</span>
-              <span className="sm:hidden text-[11px]">APK</span>
             </button>
 
             {/* Theme switcher toggle */}
