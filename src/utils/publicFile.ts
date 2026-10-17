@@ -6,6 +6,7 @@ interface PublicFilePlugin {
     data: string;
     mimeType: string;
   }): Promise<{ uri: string; path: string }>;
+  shareFile(options: { uri: string; mimeType: string; title?: string }): Promise<void>;
 }
 
 export const PublicFile = registerPlugin<PublicFilePlugin>('PublicFilePlugin');
