@@ -248,6 +248,21 @@ export const PeriodSummaryCards: React.FC<PeriodSummaryCardsProps> = ({
 
   return (
     <div className="space-y-3.5 sm:space-y-4">
+      {/* Compact mobile snapshot: week-by-week hours and pay-period total */}
+      <div className="grid grid-cols-3 gap-2 sm:hidden" aria-label={language === 'fr' ? 'Résumé des heures' : 'Hours summary'}>
+        <div className="min-w-0 rounded-xl border border-blue-200 bg-blue-50 px-2.5 py-3">
+          <div className="text-[10px] font-bold uppercase tracking-wide text-blue-800">{language === 'fr' ? 'Semaine 1' : 'Week 1'}</div>
+          <div className="mt-1 font-mono text-lg font-bold tabular-nums text-slate-900">{weeklyBreakdown.week1.workedHours.toFixed(1)}<span className="ml-1 text-xs font-semibold">h</span></div>
+        </div>
+        <div className="min-w-0 rounded-xl border border-indigo-200 bg-indigo-50 px-2.5 py-3">
+          <div className="text-[10px] font-bold uppercase tracking-wide text-indigo-800">{language === 'fr' ? 'Semaine 2' : 'Week 2'}</div>
+          <div className="mt-1 font-mono text-lg font-bold tabular-nums text-slate-900">{weeklyBreakdown.week2.workedHours.toFixed(1)}<span className="ml-1 text-xs font-semibold">h</span></div>
+        </div>
+        <div className="min-w-0 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-3">
+          <div className="text-[10px] font-bold uppercase tracking-wide text-emerald-800">{language === 'fr' ? '14 jours' : 'Biweekly'}</div>
+          <div className="mt-1 font-mono text-lg font-bold tabular-nums text-slate-900">{weeklyBreakdown.totalHours.toFixed(1)}<span className="ml-1 text-xs font-semibold">h</span></div>
+        </div>
+      </div>
       {/* 4 Summary KPI Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Card 1: Total Period Hours & Target */}
