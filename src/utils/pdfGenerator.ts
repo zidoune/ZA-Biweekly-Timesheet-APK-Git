@@ -308,19 +308,20 @@ export function generateTimesheetPdf({
     const dayEntries = periodEntries.filter((e) => e.date === daySchedule.date);
 
     if (dayEntries.length === 0) {
-      // Show empty day row (especially for weekends or off-days); use more vertical space so sign-off sits closer to the footer.
-      checkPageBreak(6);
+      // Give each day row enough breathing room so the table is easier to read and the sign-off section sits lower on the page.
+      const emptyRowHeight = 8.5;
+      checkPageBreak(emptyRowHeight);
 
       if (altRow) {
         doc.setFillColor(250, 250, 250);
-        doc.rect(marginX, currentY, pageWidth - marginX * 2, 6, 'F');
+        doc.rect(marginX, currentY, pageWidth - marginX * 2, emptyRowHeight, 'F');
       }
       altRow = !altRow;
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
       doc.setTextColor(148, 163, 184); // slate-400
-      doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 4);
+      doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 5.5);
 
       const dayOff = dayOffMap.get(daySchedule.date);
       if (dayOff) {
@@ -328,26 +329,26 @@ export function generateTimesheetPdf({
         if (isDidNotWork) {
           doc.setTextColor(225, 29, 72); // rose-600
           doc.setFont('helvetica', 'bold');
-          doc.text(`[Didn't Work] ${dayOff.notes || dayOff.reason || "Didn't work"}`, marginX + 28, currentY + 4);
+          doc.text(`[Didn't Work] ${dayOff.notes || dayOff.reason || "Didn't work"}`, marginX + 28, currentY + 5.5);
         } else {
           doc.setTextColor(180, 83, 9); // amber-700
           doc.setFont('helvetica', 'bold');
-          doc.text(`[Day Off] ${dayOff.reason || 'Scheduled Day Off'}`, marginX + 28, currentY + 4);
+          doc.text(`[Day Off] ${dayOff.reason || 'Scheduled Day Off'}`, marginX + 28, currentY + 5.5);
         }
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(148, 163, 184);
       } else if (daySchedule.isWeekend) {
-        doc.text('Weekend — No punch recorded', marginX + 28, currentY + 4);
+        doc.text('Weekend — No punch recorded', marginX + 28, currentY + 5.5);
       } else {
-        doc.text('Off-duty / Scheduled off', marginX + 28, currentY + 4);
+        doc.text('Off-duty / Scheduled off', marginX + 28, currentY + 5.5);
       }
 
       doc.setTextColor(148, 163, 184); // slate-400 gray for 0.00
-      doc.text('0.00', pageWidth - marginX - 2, currentY + 4, { align: 'right' });
+      doc.text('0.00', pageWidth - marginX - 2, currentY + 5.5, { align: 'right' });
 
       doc.setDrawColor(241, 245, 249);
-      doc.line(marginX, currentY + 6, pageWidth - marginX, currentY + 6);
-      currentY += 6;
+      doc.line(marginX, currentY + emptyRowHeight, pageWidth - marginX, currentY + emptyRowHeight);
+      currentY += emptyRowHeight;
     } else {
       dayEntries.forEach((entry) => {
         const proj = projectMap.get(entry.projectId);
@@ -358,7 +359,7 @@ export function generateTimesheetPdf({
           : 'General';
         const clientName = 'Demontigny Carpentry';
 
-        const rowHeight = 6;
+        const rowHeight = 8.5;
 
         checkPageBreak(rowHeight);
 
@@ -371,7 +372,7 @@ export function generateTimesheetPdf({
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7.5);
         doc.setTextColor(15, 23, 42);
-        doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 4.3);
+        doc.text(`${daySchedule.formattedDate} (${daySchedule.dayName})`, marginX + 2, currentY + 5.7);
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(7.5);
