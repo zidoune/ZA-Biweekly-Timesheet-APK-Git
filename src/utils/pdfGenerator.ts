@@ -43,6 +43,15 @@ export function generateTimesheetPdf({
   const marginX = 14;
   let currentY = 16;
   const generatedAt = new Date();
+  // Migrate the legacy default custom signee name in generated PDFs without touching saved timesheets.
+  const resolvedCustomSignature = customSignature
+    ? {
+        ...customSignature,
+        name: customSignature.name?.trim() === 'Mark Callahan'
+          ? 'Jacob Demontigny'
+          : resolvedCustomSignature.name,
+      }
+    : undefined;
 
   // Add searchable document metadata without changing timesheet content.
   doc.setProperties({
@@ -445,7 +454,7 @@ export function generateTimesheetPdf({
   currentY += 19; // Space above Section 2
 
   // 3. Verification & Formal Sign-off Section
-  const isCustomSigActive = Boolean(customSignature && customSignature.enabled);
+  const isCustomSigActive = Boolean(resolvedCustomSignature && resolvedCustomSignature.enabled);
   checkPageBreak(isCustomSigActive ? 48 : 42);
 
   doc.setFont('helvetica', 'bold');
@@ -464,7 +473,7 @@ export function generateTimesheetPdf({
   );
   currentY += 7;
 
-  if (isCustomSigActive && customSignature) {
+  if (isCustomSigActive && resolvedCustomSignature) {
     // 3 signature columns: Employee, Supervisor, and Custom (Client, GC, Inspector)
     const numCols = 3;
     const gap = 5;
@@ -528,11 +537,11 @@ export function generateTimesheetPdf({
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
     doc.setTextColor(30, 58, 138); // blue-900
-    const rawTitle = (customSignature.title || 'CUSTOM SIGN-OFF').toUpperCase();
+    const rawTitle = (resolvedCustomSignature.title || 'CUSTOM SIGN-OFF').toUpperCase();
     const sigTitle = rawTitle.length > 25 ? rawTitle.substring(0, 23) + '..' : rawTitle;
     doc.text(sigTitle, custColX + 3.0, currentY + 4.5);
 
-    if (customSignature.isManualInk) {
+    if (resolvedCustomSignature.isManualInk) {
       // Solid line for manual pen signature: X   ____________________
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8);
@@ -547,14 +556,14 @@ export function generateTimesheetPdf({
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(6.8);
       doc.setTextColor(71, 85, 105);
-      const signeeText = customSignature.name ? `Signee:  ${customSignature.name}` : '(Manual Ink Signature)';
+      const signeeText = resolvedCustomSignature.name ? `Signee:  ${resolvedCustomSignature.name}` : '(Manual Ink Signature)';
       doc.text(signeeText, custColX + 3.0, currentY + 17.0);
     } else {
       // Digital certification
       doc.setFont('helvetica', 'italic');
       doc.setFontSize(7.5);
       doc.setTextColor(30, 58, 138);
-      doc.text(customSignature.name || 'Authorized Signatory', custColX + 3.0, currentY + 11.5);
+      doc.text(resolvedCustomSignature.name || 'Authorized Signatory', custColX + 3.0, currentY + 11.5);
 
       doc.setDrawColor(148, 163, 184);
       doc.setLineDashPattern([1, 1], 0);
@@ -564,10 +573,10 @@ export function generateTimesheetPdf({
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(6.8);
       doc.setTextColor(71, 85, 105);
-      doc.text(`Signee:  ${customSignature.name || 'Authorized Signatory'}`, custColX + 3.0, currentY + 17.0);
+      doc.text(`Signee:  ${resolvedCustomSignature.name || 'Authorized Signatory'}`, custColX + 3.0, currentY + 17.0);
     }
 
-    const custDate = customSignature.date || lastWorkingDayDate;
+    const custDate = resolvedCustomSignature.date || lastWorkingDayDate;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6.8);
     doc.setTextColor(100, 116, 139);
@@ -578,11 +587,11 @@ export function generateTimesheetPdf({
 
     currentY += boxH + 2;
 
-    if (customSignature.statement) {
+    if (resolvedCustomSignature.statement) {
       doc.setFont('helvetica', 'italic');
       doc.setFontSize(6.8);
       doc.setTextColor(100, 116, 139);
-      const splitNote = doc.splitTextToSize(`Audit Note: "${customSignature.statement}"`, pageWidth - marginX * 2);
+      const splitNote = doc.splitTextToSize(`Audit Note: "${resolvedCustomSignature.statement}"`, pageWidth - marginX * 2);
       doc.text(splitNote[0], marginX, currentY + 3);
       currentY += 5;
     }
